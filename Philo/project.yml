@@ -1,0 +1,46 @@
+﻿## Project configuration for XcodeGen
+## Install: brew install xcodegen
+## Usage: cd Philo && xcodegen generate
+name: Philo
+options:
+  bundleIdPrefix: com.philo
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    SWIFT_OBJC_BRIDGING_HEADER: ""
+    INFOPLIST_FILE: Philo/Info.plist
+    PRODUCT_BUNDLE_IDENTIFIER: com.philo.app
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: 1
+
+targets:
+  Philo:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+        type: group
+    settings:
+      base:
+        INFOPLIST_FILE: Philo/Info.plist
+    info:
+      path: Philo/Info.plist
+      properties:
+        CFBundleDisplayName: Philo
+        CFBundlePackageType: APPL
+        LSRequiresIPhoneOS: true
+        UILaunchStoryboardName: LaunchScreen
+        UIRequiredDeviceCapabilities:
+          - armv7
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSupportsIndirectInputEvents: true
+        UIStatusBarStyle: UIStatusBarStyleDefault

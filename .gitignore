@@ -1,0 +1,17 @@
+﻿# Xcode / Swift
+.DS_Store
+*.xcworkspace
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+.build/
+*.plist
+!Philo/info.plist
+
+# macOS
+.DS_Store
+*~
+
+# Python http server cache
+__pycache__/

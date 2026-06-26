@@ -3,153 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="Philo - 哲学慰藉应用，每日一句古典哲学语录">
-<meta name="theme-color" content="#f5f5f7">
-<title>Philo — 哲学慰藉</title>
+<title>Philo - 哲学慰藉应用</title>
 <style>
-:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--blue:#007aff;--purple:#9757d9}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;color:var(--text);overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.philo-container{display:flex;flex-direction:column;flex:1;min-height:0}
-
-/* Header */
-header{background:rgba(245,245,247,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:12px 20px 8px;padding-top:calc(12px + env(safe-area-inset-top));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right));border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;z-index:10}
-header h1{font-size:26px;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,#007aff,#9757d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-header .header-date{font-size:12px;color:var(--sub);margin-top:2px}
-header .header-right button{background:0;border:0;font-size:20px;cursor:pointer;color:var(--blue);width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
-header .header-right button:hover{background:rgba(0,122,255,.1)}
-
-/* Tab Bar */
-.tab-bar{display:flex;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);flex-shrink:0;position:relative;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
-.tab-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 12px;background:0;border:0;cursor:pointer;color:var(--sub);transition:color .2s;font-size:11px;font-weight:500}
-.tab-bar button.active{color:var(--blue)}
-.tab-bar button svg{width:24px;height:24px;display:block;margin:0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-
-/* Main Content */
-main{flex:1;overflow:hidden;position:relative}
-.view{position:absolute;inset:0;overflow-y:auto;padding:20px;opacity:0;transform:translateY(12px);transition:all .35s ease-out;pointer-events:none;-webkit-overflow-scrolling:touch}
-.view.active{opacity:1;transform:translateY(0);pointer-events:auto}
-.view::-webkit-scrollbar{display:none}
-
-/* Daily View */
-.daily-head{text-align:center;margin-bottom:16px}
-.daily-head .label{font-size:20px;font-weight:600}
-.q-card{background:var(--card);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.06);cursor:pointer;transition:transform .2s,box-shadow .2s;animation:fadeUp .5s ease-out}
-.q-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-.q-card .q-open{font-size:28px;color:var(--sub);opacity:.3;margin-bottom:-6px;font-family:Georgia,serif}
-.q-card .q-text{font-size:16px;line-height:1.8;font-family:Georgia,"Noto Serif SC","Songti SC",serif;margin:8px 0 16px;letter-spacing:.01em}
-.q-card .q-author{text-align:right;font-size:14px;color:var(--sub)}
-.q-card .q-source{text-align:right;font-size:11px;color:var(--sub);opacity:.6;margin-top:2px}
-.divider{margin:16px -20px;border:0;border-top:1px solid rgba(0,0,0,.06)}
-.mood-cta{text-align:center;padding:8px 0}
-.mood-cta .mp{font-size:16px;font-weight:600;margin-bottom:4px}
-.mood-cta .ms{font-size:12px;color:var(--sub);margin-bottom:16px}
-.btn-primary{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:22px;padding:12px 32px;font-size:15px;font-weight:500;cursor:pointer;transition:transform .2s,box-shadow .2s}
-.btn-primary:hover{transform:scale(1.03);box-shadow:0 4px 16px rgba(0,122,255,.35)}
-
-/* Mood View */
-.mood-h{font-size:17px;font-weight:600;margin-bottom:16px}
-.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.mood-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:12px;cursor:pointer;background:0;border:0;transition:all .2s;font-family:inherit}
-.mood-item:hover{background:rgba(0,122,255,.05)}
-.mood-item.act{background:rgba(0,122,255,.1)}
-.mood-item .mi{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s}
-.mood-item.act .mi{color:#fff!important;transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.mood-item .mn{font-size:11px;color:var(--sub);text-align:center;line-height:1.3}
-.mood-item.act .mn{color:var(--blue);font-weight:600}
-.mood-results .r-h{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.btn-save{display:block;width:100%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:12px;padding:13px;font-size:14px;font-weight:500;cursor:pointer;margin-top:12px;transition:transform .2s}
-.btn-save:hover{transform:scale(1.02)}
-.empty-state{text-align:center;padding:30px 0;color:var(--sub)}
-.empty-state .ei{font-size:40px;display:block;margin-bottom:8px;opacity:.4}
-.empty-state .et{font-size:14px;margin-bottom:4px}
-.empty-state .es{font-size:12px;opacity:.7}
-
-/* History View */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
-.stat{border-radius:12px;padding:14px 8px;text-align:center;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.stat .si{font-size:20px;display:block;margin-bottom:4px}
-.stat .sv{font-size:24px;font-weight:700;display:block}
-.stat .sl{font-size:11px;color:var(--sub);margin-top:4px;display:block}
-.section-h{font-size:15px;font-weight:600;margin-bottom:12px}
-.week-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--card);border-radius:12px;padding:16px 12px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-.week-item{text-align:center}
-.week-item .wi{font-size:20px;display:block;margin-bottom:4px}
-.week-item .wc{font-size:14px;font-weight:600;display:block}
-.week-item .wl{font-size:10px;color:var(--sub);display:block;margin-top:2px}
-.entry{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;transition:transform .2s}
-.entry:hover{transform:translateY(-1px)}
-.entry .ei{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.entry .eo{flex:1}
-.entry .em{font-size:14px;font-weight:600}
-.entry .et{font-size:12px;color:var(--sub);margin-top:2px}
-.entry .eq{font-size:10px;color:var(--blue);margin-top:2px}
-
-/* Toast */
-.toast{position:fixed;bottom:90px;left:20px;right:20px;max-width:400px;margin:0 auto;background:#1d1d1f;color:#fff;border-radius:10px;padding:13px 18px;text-align:center;font-size:14px;opacity:0;transform:translateY(12px);transition:all .35s;pointer-events:none;z-index:1000}
-.toast.show{opacity:1;transform:translateY(0)}
-
-/* Modal */
-.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center}
-.modal-overlay.show{opacity:1;pointer-events:auto}
-.modal-inner{background:var(--card);border-radius:20px 20px 0 0;padding:32px 24px 36px;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:70vh;overflow-y:auto;width:100%;max-width:500px}
-.modal-overlay.show .modal-inner{transform:translateY(0)}
-.modal-inner::-webkit-scrollbar{display:none}
-.modal-inner .mq{font-size:18px;line-height:1.8;font-family:Georgia,"Noto Serif SC","Songti SC",serif;text-align:center;margin-bottom:16px}
-.modal-inner .ma{text-align:center;font-size:15px;color:var(--sub);margin-bottom:4px}
-.modal-inner .ms{text-align:center;font-size:12px;color:var(--sub);opacity:.7;margin-bottom:16px}
-.modal-inner .mtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px}
-.modal-inner .mtags span{font-size:12px;color:var(--blue);background:rgba(0,122,255,.08);padding:4px 12px;border-radius:12px}
-.btn-close{display:block;margin:8px auto 0;background:var(--blue);color:#fff;border:0;border-radius:14px;padding:12px 28px;font-size:14px;font-weight:500;cursor:pointer}
-
-/* Responsive */
-@media(max-width:400px){.mood-grid{grid-template-columns:repeat(3,1fr)}.mood-item .mi{width:40px;height:40px;font-size:18px}}@media(max-width:340px){.mood-grid{grid-template-columns:repeat(2,1fr)}}@media(min-width:768px){
-body{justify-content:center;padding:40px}
-.philo-container{width:420px;height:850px;border-radius:44px;border:1px solid rgba(255,255,255,.2);box-shadow:0 25px 60px rgba(0,0,0,.15);overflow:hidden;display:flex;flex-direction:column;position:relative;background:var(--bg)}
-body{background:#1a1a1e}
-}
-
-/* Loading */
-.loading{text-align:center;padding:40px 0;color:var(--sub)}
-.loading .spinner{width:32px;height:32px;border:3px solid rgba(0,122,255,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
+:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--blue:#007aff;--purple:#9757d9;--r:16px}
+body{background:#1a1a1e;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+.phone{width:390px;height:844px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 3px #333,0 0 0 6px #222,0 25px 60px rgba(0,0,0,.5)}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:30px;background:#1a1a1e;border-radius:0 0 18px 18px;z-index:100}
+.notch::after{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#222;box-shadow:-24px 1px 0 0 #222}
+.sbar{height:44px;padding:12px 24px 0;display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#1d1d1f;background:var(--bg);position:relative;z-index:50}
+.content{height:calc(100% - 64px - 44px);overflow:hidden;position:relative}
+.panel{position:absolute;inset:0;overflow-y:auto;padding:20px 20px 28px;-webkit-overflow-scrolling:touch;opacity:0;transform:translateY(12px);pointer-events:none;transition:all .35s ease-out}
+.panel.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.panel::-webkit-scrollbar{display:none}
+.tabbar{position:absolute;bottom:0;left:0;right:0;height:64px;background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(0,0,0,.05);z-index:100}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;background:0;border:0;cursor:pointer;padding:4px 20px;color:var(--sub);transition:color .2s;font-size:10px}
+.tab.active{color:var(--blue)}.tab svg{width:22px;height:22px}.tab span{font-weight:500;font-size:10px}
+.ddate{font-size:13px;color:var(--sub);text-align:center;margin-bottom:4px}.dlbl{font-size:20px;font-weight:600;text-align:center;margin-bottom:16px}
+.qc{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.06);cursor:pointer;transition:transform .2s;animation:in .5s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.qc:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06)}
+.qo{font-size:24px;color:var(--sub);opacity:.4;margin-bottom:-4px}.qt{font-size:16px;line-height:1.7;font-family:Georgia,"Noto Serif SC","Songti SC",serif;margin:4px 0 12px}.qa{text-align:right;font-size:13px;color:var(--sub)}.qs{text-align:right;font-size:11px;color:var(--sub);opacity:.7}
+.divider{margin:20px 0 12px}.divider hr{border:0;border-top:1px solid rgba(0,0,0,.06);margin-bottom:16px}
+.mpt{font-size:16px;font-weight:600;text-align:center;margin-bottom:4px}.msb{font-size:12px;color:var(--sub);text-align:center;margin-bottom:16px}
+.sbtn{display:block;margin:12px auto 0;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:22px;padding:12px 32px;font-size:15px;font-weight:500;cursor:pointer;transition:transform .2s}
+.sbtn:hover{transform:scale(1.03)}
+.mgt{font-size:17px;font-weight:600;margin-bottom:16px;padding-top:4px}
+.mgg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.mi{display:flex;flex-direction:column;align-items:center;gap:4px;background:0;border:0;cursor:pointer;padding:8px 4px;border-radius:12px;transition:all .2s}
+.mi:hover{background:rgba(0,122,255,.05)}.mi.act{background:rgba(0,122,255,.12)}
+.mi .ic{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .2s}
+.mi.act .ic{color:#fff!important;transform:scale(1.1)}.mi .mn{font-size:10px;color:var(--sub);text-align:center}.mi.act .mn{color:var(--blue);font-weight:600}
+.res{margin-top:12px}.res .rt{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.svbtn{display:block;margin:8px 0 0;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:12px;padding:12px;width:100%;font-size:14px;font-weight:500;cursor:pointer}
+.hs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.sc{background:var(--card);border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sc .si{font-size:20px;display:block;margin-bottom:4px}.sc .sv{font-size:22px;font-weight:700;display:block}.sc .sl{font-size:10px;color:var(--sub);margin-top:4px;display:block}
+.hst{font-size:15px;font-weight:600;margin-bottom:12px}.hw{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--card);border-radius:12px;padding:16px 12px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.wi{text-align:center}.wi .wi2{font-size:20px;display:block;margin-bottom:4px}.wi .wc{font-size:14px;font-weight:600;display:block}.wi .wl{font-size:9px;color:var(--sub);display:block;margin-top:2px}
+.he{text-align:center;padding:40px 0;color:var(--sub)}.he .he2{font-size:40px;display:block;margin-bottom:12px;opacity:.4}.he .ht{font-size:14px}.he .hs2{font-size:12px;margin-top:4px;opacity:.7}
+.he2{background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer}
+.he2 .ei{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.he2 .eo{flex:1}.he2 .em{font-size:14px;font-weight:600;margin-bottom:2px}.he2 .et{font-size:11px;color:var(--sub)}.he2 .eq{font-size:10px;color:var(--blue);margin-top:2px}
+.toast{position:absolute;bottom:80px;left:20px;right:20px;background:#1d1d1f;color:#fff;border-radius:10px;padding:12px 16px;text-align:center;font-size:13px;opacity:0;transform:translateY(10px);transition:all .3s;z-index:200;pointer-events:none}
+.toast.s{opacity:1;transform:translateY(0)}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end}
+.modal.s{opacity:1;pointer-events:auto}.modal .mc{background:var(--card);border-radius:20px 20px 0 0;padding:30px 24px 40px;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:70vh;overflow-y:auto;width:100%}
+.modal.s .mc{transform:translateY(0)}.modal .mqt{font-size:18px;line-height:1.8;font-family:Georgia,"Noto Serif SC","Songti SC",serif;text-align:center;margin:12px 0 20px}
+.modal .ma{text-align:center;font-size:15px;color:var(--sub)}.modal .ms{text-align:center;font-size:12px;color:var(--sub);opacity:.7;margin-bottom:16px}
+.mcl{display:block;margin:16px auto 0;background:var(--blue);color:#fff;border:0;border-radius:14px;padding:12px 24px;font-size:14px;font-weight:500;cursor:pointer}
+.mtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0;font-size:12px;color:var(--blue)}
+.mtags span{background:rgba(0,122,255,.08);padding:4px 12px;border-radius:12px}
+@media(max-width:480px){body{padding:0;background:var(--bg)}.phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}.notch{display:none}.sbar{padding:12px 20px 0}}
 </style>
 </head>
 <body>
-<div class="philo-container" id="app">
-<header>
-<div><h1>Philo</h1><div class="header-date" id="headerDate"></div></div>
-<div class="header-right"><button onclick="refreshDaily()" title="换一句" id="refreshBtn">↻</button></div>
-</header>
-<main>
-<!-- Daily View -->
-<div class="view active" id="viewDaily"><div id="dailyContent"></div></div>
-<!-- Mood View -->
-<div class="view" id="viewMood"><div id="moodContent"></div></div>
-<!-- History View -->
-<div class="view" id="viewHistory"><div id="historyContent"></div></div>
-</main>
-<nav class="tab-bar">
-<button class="active" onclick="switchTab('daily')">
-<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-<span>今日</span>
-</button>
-<button onclick="switchTab('mood')">
-<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-<span>心情</span>
-</button>
-<button onclick="switchTab('history')">
-<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-<span>日记</span>
-</button>
-</nav>
+<div class="phone" id="app">
+<div class="notch"></div>
+<div class="sbar"><span id="st">9:41</span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
+<div class="content">
+
+<div class="panel active" id="pD">
+<div class="ddate" id="ddate"></div>
+<div class="dlbl">今日哲思</div>
+<div id="dqc"></div>
+<div class="divider"><hr></div>
+<div class="mpt">今天心情如何？</div>
+<div class="msb">选择你的心情，获取匹配的哲思语录</div>
+<button class="sbtn" onclick="gt('mood')">开始心情记录</button>
 </div>
-<div class="toast" id="toast"></div>
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
-<div class="modal-inner"><div id="modalBody"></div><button class="btn-close" onclick="closeModal()">关闭</button></div>
+
+<div class="panel" id="pM">
+<div class="mgt">你现在感觉怎么样？</div>
+<div class="mgg" id="mg"></div>
+<div id="mr"></div>
+</div>
+
+<div class="panel" id="pH">
+<div class="hs" id="hs"></div>
+<div class="hst">最近一周心情概览</div>
+<div class="hw" id="hw"></div>
+<div class="hst">历史记录</div>
+<div id="he"></div>
+</div>
+
+</div>
+<div class="tabbar">
+<button class="tab active" data-tab="daily" onclick="gt('daily')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span>今日</span></button>
+<button class="tab" data-tab="mood" onclick="gt('mood')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>心情</span></button>
+<button class="tab" data-tab="history" onclick="gt('history')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg><span>日记</span></button>
+</div>
+<div class="toast" id="tst"></div>
+<div class="modal" id="modal"><div class="mc" id="mb"><div id="mBody"></div><button class="mcl" onclick="cm()">关闭</button></div></div>
 </div>
 <script>
-const Q = [
+const Q=;
+[
     {
         "text": "我们听到的一切都是一个观点，不是事实。我们看见的一切都是一个视角，不是真相。",
         "author": "马可·奥勒留",
@@ -1007,159 +956,157 @@ const Q = [
         "moodCategories": ["inspired", "hopeful"]
     }
 ]
+
 ;
+
+// Mood definitions
 const MOODS=[
-{id:'anxious',name:'焦虑',icon:'💛',c:'#ff9500',b:'rgba(255,149,0,.15)'},
-{id:'sad',name:'悲伤',icon:'💜',c:'#5856d6',b:'rgba(88,86,214,.15)'},
-{id:'angry',name:'愤怒',icon:'❤️',c:'#ff3b30',b:'rgba(255,59,48,.15)'},
-{id:'lonely',name:'孤独',icon:'🌙',c:'#af52de',b:'rgba(175,82,222,.15)'},
-{id:'overwhelmed',name:'不堪重负',icon:'🌪️',c:'#ff2d55',b:'rgba(255,45,85,.15)'},
-{id:'melancholic',name:'忧郁',icon:'🌤️',c:'#00c7be',b:'rgba(0,199,190,.15)'},
-{id:'uncertain',name:'迷茫',icon:'❓',c:'#a2845e',b:'rgba(162,132,94,.15)'},
-{id:'weary',name:'疲惫',icon:'😴',c:'#8e8e93',b:'rgba(142,142,147,.15)'},
-{id:'joyful',name:'喜悦',icon:'☀️',c:'#ffcc00',b:'rgba(255,204,0,.2)'},
-{id:'grateful',name:'感恩',icon:'💚',c:'#34c759',b:'rgba(52,199,89,.15)'},
-{id:'hopeful',name:'充满希望',icon:'✨',c:'#32ade6',b:'rgba(50,173,230,.15)'},
-{id:'contemplative',name:'沉思',icon:'📚',c:'#007aff',b:'rgba(0,122,255,.15)'},
-{id:'peaceful',name:'平静',icon:'🍃',c:'#34c759',b:'rgba(52,199,89,.15)'},
-{id:'inspired',name:'受鼓舞',icon:'⭐',c:'#ff9500',b:'rgba(255,149,0,.15)'}
+{id:'anxious',name:'焦虑',icon:'💛',bg:'rgba(255,149,0,.15)',fg:'#ff9500'},
+{id:'sad',name:'悲伤',icon:'💜',bg:'rgba(88,86,214,.15)',fg:'#5856d6'},
+{id:'angry',name:'愤怒',icon:'❤️',bg:'rgba(255,59,48,.15)',fg:'#ff3b30'},
+{id:'lonely',name:'孤独',icon:'🌙',bg:'rgba(175,82,222,.15)',fg:'#af52de'},
+{id:'overwhelmed',name:'不堪重负',icon:'🌪️',bg:'rgba(255,45,85,.15)',fg:'#ff2d55'},
+{id:'melancholic',name:'忧郁',bg:'rgba(0,199,190,.15)',fg:'#00c7be',icon:'🌤️'},
+{id:'uncertain',name:'迷茫',icon:'❓',bg:'rgba(162,132,94,.15)',fg:'#a2845e'},
+{id:'weary',name:'疲惫',icon:'😴',bg:'rgba(142,142,147,.15)',fg:'#8e8e93'},
+{id:'joyful',name:'喜悦',icon:'☀️',bg:'rgba(255,204,0,.15)',fg:'#ffcc00'},
+{id:'grateful',name:'感恩',icon:'💚',bg:'rgba(52,199,89,.15)',fg:'#34c759'},
+{id:'hopeful',name:'充满希望',icon:'✨',bg:'rgba(50,173,230,.15)',fg:'#32ade6'},
+{id:'contemplative',name:'沉思',icon:'📚',bg:'rgba(0,122,255,.15)',fg:'#007aff'},
+{id:'peaceful',name:'平静',icon:'🍃',bg:'rgba(52,199,89,.15)',fg:'#34c759'},
+{id:'inspired',name:'受鼓舞',icon:'⭐',bg:'rgba(255,149,0,.15)',fg:'#ff9500'}
 ];
 
-let history = JSON.parse(localStorage.getItem('philo_history') || '[]');
-let currentMood = null;
+let historyEntries=JSON.parse(localStorage.getItem('philo_history')||'[]');
 
-function toast(msg){
-const t=document.getElementById('toast');
-t.textContent=msg;t.classList.add('show');
-setTimeout(()=>t.classList.remove('show'),2200);
-}
+function say(m){const t=document.getElementById('tst');t.textContent=m;t.classList.add('s');setTimeout(()=>t.classList.remove('s'),2000)}
 
-function switchTab(tab){
-const views={daily:'viewDaily',mood:'viewMood',history:'viewHistory'};
-document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-document.getElementById(views[tab]).classList.add('active');
-document.querySelectorAll('.tab-bar button').forEach((b,i)=>{
-b.classList.toggle('active',['daily','mood','history'][i]===tab);
-});
+function gt(tab){
+document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+const m={daily:'pD',mood:'pM',history:'pH'};
+document.getElementById(m[tab]).classList.add('active');
 if(tab==='daily')renderDaily();
 if(tab==='mood')renderMoodGrid();
 if(tab==='history')renderHistory();
 }
 
-function refreshDaily(){
-const btn=document.getElementById('refreshBtn');
-btn.style.transform='rotate(360deg)';btn.style.transition='transform .5s';
-setTimeout(()=>btn.style.transform='',500);
-renderDaily(true);
-}
-
-function renderDaily(forceRandom){
-const v=document.getElementById('dailyContent');
-const n=new Date();
-document.getElementById('headerDate').textContent=n.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
-const idx=forceRandom?Math.floor(Math.random()*Q.length):n.getDate()%Q.length;
-const q=Q[idx];
-v.innerHTML='<div class="daily-head"><div class="label">今日哲思</div></div>'+
-'<div class="q-card" onclick="showQuote('+idx+')"><div class="q-open">「</div><div class="q-text">'+q.text+'</div><div class="q-author">—— '+q.author+'</div>'+(q.source?'<div class="q-source">'+q.source+'</div>':'')+'</div>'+
-'<hr class="divider">'+
-'<div class="mood-cta"><div class="mp">今天心情如何？</div><div class="ms">选择你的心情，获取匹配的哲思语录</div><button class="btn-primary" onclick="switchTab(\'mood\')">开始心情记录</button></div>';
+function renderDaily(){
+const now=new Date();
+const opts={year:'numeric',month:'long',day:'numeric',weekday:'long'};
+document.getElementById('ddate').textContent=now.toLocaleDateString('zh-CN',opts);
+const i=new Date().getDate()%Q.length;
+const q=Q[i];
+const c=document.getElementById('dqc');
+c.innerHTML='<div class="qc" onclick="showQuote('+i+')"><div class="qo">「</div><div class="qt">'+q.text+'</div><div class="qa">—— '+q.author+'</div>'+(q.source?'<div class="qs">'+q.source+'</div>':'')+'</div>';
 }
 
 function renderMoodGrid(){
-const v=document.getElementById('moodContent');
-v.innerHTML='<div class="mood-h">你现在感觉怎么样？</div><div class="mood-grid" id="moodGrid"></div><div id="moodResults"></div>';
-const g=document.getElementById('moodGrid');
-g.innerHTML=MOODS.map(m=>'<button class="mood-item" data-id="'+m.id+'" onclick="selectMood(\''+m.id+'\')"><div class="mi" style="background:'+m.b+';color:'+m.c+'">'+m.icon+'</div><div class="mn">'+m.name+'</div></button>').join('');
-document.getElementById('moodResults').innerHTML='';
+const g=document.getElementById('mg');
+g.innerHTML=MOODS.map(m=>'<button class="mi" data-mood="'+m.id+'" onclick="selectMood(\''+m.id+'\')"><div class="ic" style="background:'+m.bg+';color:'+m.fg+'">'+m.icon+'</div><div class="mn">'+m.name+'</div></button>').join('');
+document.getElementById('mr').innerHTML='';
 }
 
+let selMood=null;
 function selectMood(id){
-currentMood=id;
-document.querySelectorAll('.mood-item').forEach(b=>b.classList.toggle('act',b.dataset.id===id));
+selMood=id;
+document.querySelectorAll('.mi').forEach(b=>b.classList.toggle('act',b.dataset.mood===id));
 const mood=MOODS.find(m=>m.id===id);
-const match=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(id)).sort(()=>Math.random()-.5).slice(0,10);
-const r=document.getElementById('moodResults');
-if(!match.length){
-r.innerHTML='<div class="empty-state"><span class="ei">😔</span><span class="et">暂时没有匹配「'+mood.name+'」的语录</span></div>';
+const matching=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(id)).sort(()=>Math.random()-.5).slice(0,10);
+const r=document.getElementById('mr');
+if(matching.length===0){
+r.innerHTML='<div class="res"><div class="rt">😔 暂时没有匹配「'+mood.name+'」的语录</div></div>';
 return;
 }
-r.innerHTML='<div class="mood-results"><div class="r-h">'+mood.icon+' 给「'+mood.name+'」的慰藉</div>'+
-match.map((q,i)=>'<div class="q-card" onclick="showQuote('+Q.indexOf(q)+')" style="animation-delay:'+(i*0.05)+'s"><div class="q-open">「</div><div class="q-text">'+q.text+'</div><div class="q-author">—— '+q.author+'</div></div>').join('')+
-'<button class="btn-save" onclick="saveMood()">💾 记录此刻心情</button></div>';
-}
-
-function saveMood(){
-if(!currentMood){toast('请先选择一种心情');return;}
-const n=new Date();
-history.push({date:n.toISOString().slice(0,10),time:n.toTimeString().slice(0,5),mood:currentMood,ts:n.getTime()});
-localStorage.setItem('philo_history',JSON.stringify(history));
-toast('✅ 已记录！前往「日记」标签查看');
-const mood=MOODS.find(m=>m.id===currentMood);
-document.getElementById('moodResults').innerHTML+='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:8px">✅ 已保存到日记</div>';
-setTimeout(()=>{document.getElementById('moodResults').innerHTML='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:12px;padding:20px 0">✅ 已保存！去日记标签看看吧</div>';},1500);
+r.innerHTML='<div class="res"><div class="rt">'+mood.icon+' 给「'+mood.name+'」的慰藉</div>'+
+matching.map((q,i)=>'<div class="qc" onclick="showQuote('+Q.indexOf(q)+')"><div class="qo">「</div><div class="qt">'+q.text+'</div><div class="qa">—— '+q.author+'</div></div>').join('')+
+'<button class="svbtn" onclick="saveMood()">💾 记录此刻心情与这些语录</button></div>';
 }
 
 function renderHistory(){
-const v=document.getElementById('historyContent');
-const total=history.length;
+const total=historyEntries.length;
 let streak=0;
-const t=new Date();t.setHours(0,0,0,0);
-for(let d=new Date(t);;d.setDate(d.getDate()-1)){
-if(history.some(e=>e.date===d.toISOString().slice(0,10)))streak++;else break;
+const today=new Date();today.setHours(0,0,0,0);
+for(let d=new Date(today);;d.setDate(d.getDate()-1)){
+const ds=d.toISOString().slice(0,10);
+if(historyEntries.some(e=>e.date===ds))streak++;else break;
 }
-v.innerHTML='<div class="stats"><div class="stat"><span class="si">✅</span><span class="sv">'+total+'</span><span class="sl">总记录</span></div><div class="stat"><span class="si">🔥</span><span class="sv">'+streak+'</span><span class="sl">连续天数</span></div><div class="stat"><span class="si">📅</span><span class="sv">'+total+'</span><span class="sl">日记条数</span></div></div>';
-v.innerHTML+='<div class="section-h">最近一周心情概览</div>';
+document.getElementById('hs').innerHTML=
+'<div class="sc"><span class="si">✅</span><span class="sv">'+total+'</span><span class="sl">总记录</span></div>'+
+'<div class="sc"><span class="si">🔥</span><span class="sv">'+streak+'</span><span class="sl">连续天数</span></div>'+
+'<div class="sc"><span class="si">📅</span><span class="sv">'+total+'</span><span class="sl">日记条数</span></div>';
+
 const week=[];
 for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);week.push(d);}
-const weekMoods=week.map(d=>{const ds=d.toISOString().slice(0,10);const entries=history.filter(e=>e.date===ds);const cnt={};entries.forEach(e=>{cnt[e.mood]=(cnt[e.mood]||0)+1});let best=null,bestC=0;for(const[k,vc]of Object.entries(cnt)){if(vc>bestC){best=k;bestC=vc;}}return best;});
-const days=['一','二','三','四','五','六','日'];
-v.innerHTML+='<div class="week-grid">'+weekMoods.map((m,i)=>{
+const weekMoods=week.map(d=>{
+const ds=d.toISOString().slice(0,10);
+const dayEntries=historyEntries.filter(e=>e.date===ds);
+const counts={};
+dayEntries.forEach(e=>{counts[e.mood]=(counts[e.mood]||0)+1;});
+let best=null,bestCount=0;
+for(const[k,v]of Object.entries(counts)){if(v>bestCount){best=k;bestCount=v;}}
+return best;
+});
+const hw=document.getElementById('hw');
+hw.innerHTML=weekMoods.map((m,i)=>{
 const mood=MOODS.find(mo=>mo.id===m);
-if(!mood)return'<div class="week-item"><span class="wi">-</span><span class="wc">0</span><span class="wl">周'+(i===6?'日':days[i])+'</span></div>';
-return '<div class="week-item"><span class="wi">'+mood.icon+'</span><span class="wc">'+history.filter(e=>e.date===week[i].toISOString().slice(0,10)).length+'</span><span class="wl">'+mood.name+'</span></div>';
-}).join('')+'</div>';
-v.innerHTML+='<div class="section-h">历史记录</div>';
-if(!history.length){
-v.innerHTML+='<div class="empty-state"><span class="ei">📖</span><span class="et">还没有任何心情记录</span><span class="es">记录心情，开始你的哲学日记</span></div>';
+if(!mood)return'<div class="wi"><span class="wi2">-</span><span class="wc">0</span><span class="wl">周'+(i+1===7?'日':['一','二','三','四','五','六'][i])+'</span></div>';
+return '<div class="wi"><span class="wi2">'+mood.icon+'</span><span class="wc">'+(historyEntries.filter(e=>e.date===week[i].toISOString().slice(0,10)).length)+'</span><span class="wl">'+mood.name+'</span></div>';
+}).join('');
+
+const he=document.getElementById('he');
+if(historyEntries.length===0){
+he.innerHTML='<div class="he"><span class="he2">📖</span><span class="ht">还没有任何心情记录</span><span class="hs2">记录心情，开始你的哲学日记</span></div>';
 return;
 }
-const sorted=[...history].sort((a,b)=>b.ts-a.ts);
-v.innerHTML+='<div id="entryList">'+sorted.map((e,i)=>{
+he.innerHTML=historyEntries.sort((a,b)=>b.date.localeCompare(a.date)).map((e,i)=>{
 const mood=MOODS.find(m=>m.id===e.mood);
 if(!mood)return'';
-return '<div class="entry" onclick="showEntry('+i+')"><div class="ei" style="background:'+mood.b+';color:'+mood.c+'">'+mood.icon+'</div><div class="eo"><div class="em">'+mood.name+'</div><div class="et">'+e.date+' '+e.time+'</div></div></div>';
-}).join('')+'</div>';
+return '<div class="he2" onclick="showEntry('+i+')"><div class="ei" style="background:'+mood.bg+';color:'+mood.fg+'">'+mood.icon+'</div><div class="eo"><div class="em">'+mood.name+'</div><div class="et">'+e.date+' '+(e.time||'')+'</div>'+(e.quotesCount>0?'<div class="eq">📖 收藏了 '+e.quotesCount+' 条语录</div>':'')+'</div></div>';
+}).join('');
 }
 
-function showQuote(idx){
-const q=Q[idx];
-const mb=document.getElementById('modalBody');
-const tags=q.tags&&q.tags.length?'<div class="mtags">'+q.tags.map(t=>'<span>'+t+'</span>').join('')+'</div>':'';
-const source=(q.source||'')+(q.era?' · '+q.era:'');
-mb.innerHTML='<div class="mq">「'+q.text+'」</div><div class="ma">—— '+q.author+'</div>'+(source?'<div class="ms">'+source+'</div>':'')+tags;
-document.getElementById('modal').classList.add('show');
+function saveMood(){
+if(!selMood){say('请先选择一种心情');return;}
+const now=new Date();
+historyEntries.push({
+date:now.toISOString().slice(0,10),
+time:now.toTimeString().slice(0,5),
+mood:selMood,
+quotesCount:Q.filter(q=>q.moodCategories&&q.moodCategories.includes(selMood)).length
+});
+localStorage.setItem('philo_history',JSON.stringify(historyEntries));
+say('✅ 已记录！前往「日记」标签查看');
+document.getElementById('mr').innerHTML+='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:8px">✅ 已保存到日记</div>';
 }
 
-function showEntry(idx){
-const sorted=[...history].sort((a,b)=>b.ts-a.ts);
-const e=sorted[idx];
+function showQuote(i){
+const q=Q[i];
+const mb=document.getElementById('mBody');
+mb.innerHTML='<div class="mqt">「'+q.text+'」</div><div class="ma">—— '+q.author+'</div>'+(q.source?'<div class="ms">'+q.source+(q.era?' · '+q.era:'')+'</div>':'<div class="ms">'+(q.era||'')+'</div>')+
+(q.tags&&q.tags.length?'<div class="mtags">'+q.tags.map(t=>'<span>'+t+'</span>').join('')+'</div>':'');
+document.getElementById('modal').classList.add('s');
+}
+
+function showEntry(i){
+const e=historyEntries.sort((a,b)=>b.date.localeCompare(a.date))[i];
 if(!e)return;
 const mood=MOODS.find(m=>m.id===e.mood);
-const match=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(e.mood));
-const mb=document.getElementById('modalBody');
-mb.innerHTML='<div style="text-align:center;font-size:44px;margin-bottom:8px">'+(mood?mood.icon:'😶')+'</div>'+
+const matching=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(e.mood));
+const mb=document.getElementById('mBody');
+mb.innerHTML='<div style="text-align:center;font-size:40px;margin-bottom:8px">'+(mood?mood.icon:'😶')+'</div>'+
 '<div style="text-align:center;font-size:18px;font-weight:600;margin-bottom:4px">'+(mood?mood.name:'未知')+'</div>'+
 '<div style="text-align:center;font-size:13px;color:var(--sub);margin-bottom:16px">'+e.date+' '+e.time+'</div>'+
-(match.length?'<div style="font-size:13px;color:var(--sub);margin-bottom:8px">当日可匹配的语录</div>'+
-match.slice(0,3).map(q=>'<div style="font-size:13px;line-height:1.5;padding:10px 0;border-top:1px solid rgba(0,0,0,.04)">「'+q.text+'」<br><span style="font-size:11px;color:var(--sub)">—— '+q.author+'</span></div>').join(''):'');
-document.getElementById('modal').classList.add('show');
+(matching.length>0?'<div style="font-size:13px;color:var(--sub);margin-bottom:8px">当日匹配语录</div>'+matching.slice(0,3).map(q=>'<div style="font-size:13px;line-height:1.5;padding:8px 0;border-top:1px solid rgba(0,0,0,.04)">「'+q.text+'」<br><span style="font-size:11px;color:var(--sub)">—— '+q.author+'</span></div>').join(''):'<div style="text-align:center;font-size:13px;color:var(--sub);padding:12px 0">暂无语录记录</div>');
+document.getElementById('modal').classList.add('s');
 }
 
-function closeModal(){document.getElementById('modal').classList.remove('show')}
+function cm(){document.getElementById('modal').classList.remove('s')}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)cm()});
 
 // Init
 renderDaily();
+renderMoodGrid();
 </script>
 </body>
 </html>
-
