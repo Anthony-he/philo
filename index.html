@@ -1,0 +1,1164 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Philo - 哲学慰藉应用，每日一句古典哲学语录">
+<meta name="theme-color" content="#f5f5f7">
+<title>Philo — 哲学慰藉</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--blue:#007aff;--purple:#9757d9}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;color:var(--text);overflow:hidden;height:100dvh;display:flex;flex-direction:column}
+
+/* Header */
+header{background:rgba(245,245,247,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:12px 20px 8px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;z-index:10}
+header h1{font-size:26px;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,#007aff,#9757d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header .header-date{font-size:12px;color:var(--sub);margin-top:2px}
+header .header-right button{background:0;border:0;font-size:20px;cursor:pointer;color:var(--blue);width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
+header .header-right button:hover{background:rgba(0,122,255,.1)}
+
+/* Tab Bar */
+.tab-bar{display:flex;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);flex-shrink:0;position:relative;z-index:10}
+.tab-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;background:0;border:0;cursor:pointer;color:var(--sub);transition:color .2s;font-size:10px;font-weight:500}
+.tab-bar button.active{color:var(--blue)}
+.tab-bar button svg{width:24px;height:24px;display:block;margin:0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Main Content */
+main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;padding:20px;opacity:0;transform:translateY(12px);transition:all .35s ease-out;pointer-events:none;-webkit-overflow-scrolling:touch}
+.view.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.view::-webkit-scrollbar{display:none}
+
+/* Daily View */
+.daily-head{text-align:center;margin-bottom:16px}
+.daily-head .label{font-size:20px;font-weight:600}
+.q-card{background:var(--card);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.06);cursor:pointer;transition:transform .2s,box-shadow .2s;animation:fadeUp .5s ease-out}
+.q-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.q-card .q-open{font-size:28px;color:var(--sub);opacity:.3;margin-bottom:-6px;font-family:Georgia,serif}
+.q-card .q-text{font-size:16px;line-height:1.8;font-family:Georgia,"Noto Serif SC","Songti SC",serif;margin:8px 0 16px;letter-spacing:.01em}
+.q-card .q-author{text-align:right;font-size:14px;color:var(--sub)}
+.q-card .q-source{text-align:right;font-size:11px;color:var(--sub);opacity:.6;margin-top:2px}
+.divider{margin:16px -20px;border:0;border-top:1px solid rgba(0,0,0,.06)}
+.mood-cta{text-align:center;padding:8px 0}
+.mood-cta .mp{font-size:16px;font-weight:600;margin-bottom:4px}
+.mood-cta .ms{font-size:12px;color:var(--sub);margin-bottom:16px}
+.btn-primary{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:22px;padding:12px 32px;font-size:15px;font-weight:500;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn-primary:hover{transform:scale(1.03);box-shadow:0 4px 16px rgba(0,122,255,.35)}
+
+/* Mood View */
+.mood-h{font-size:17px;font-weight:600;margin-bottom:16px}
+.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.mood-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:12px;cursor:pointer;background:0;border:0;transition:all .2s;font-family:inherit}
+.mood-item:hover{background:rgba(0,122,255,.05)}
+.mood-item.act{background:rgba(0,122,255,.1)}
+.mood-item .mi{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s}
+.mood-item.act .mi{color:#fff!important;transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.mood-item .mn{font-size:10px;color:var(--sub);text-align:center;line-height:1.2}
+.mood-item.act .mn{color:var(--blue);font-weight:600}
+.mood-results .r-h{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.btn-save{display:block;width:100%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:12px;padding:13px;font-size:14px;font-weight:500;cursor:pointer;margin-top:12px;transition:transform .2s}
+.btn-save:hover{transform:scale(1.02)}
+.empty-state{text-align:center;padding:30px 0;color:var(--sub)}
+.empty-state .ei{font-size:40px;display:block;margin-bottom:8px;opacity:.4}
+.empty-state .et{font-size:14px;margin-bottom:4px}
+.empty-state .es{font-size:12px;opacity:.7}
+
+/* History View */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.stat{border-radius:12px;padding:14px 8px;text-align:center;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.stat .si{font-size:20px;display:block;margin-bottom:4px}
+.stat .sv{font-size:24px;font-weight:700;display:block}
+.stat .sl{font-size:10px;color:var(--sub);margin-top:4px;display:block}
+.section-h{font-size:15px;font-weight:600;margin-bottom:12px}
+.week-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--card);border-radius:12px;padding:16px 12px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.week-item{text-align:center}
+.week-item .wi{font-size:20px;display:block;margin-bottom:4px}
+.week-item .wc{font-size:14px;font-weight:600;display:block}
+.week-item .wl{font-size:9px;color:var(--sub);display:block;margin-top:2px}
+.entry{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;transition:transform .2s}
+.entry:hover{transform:translateY(-1px)}
+.entry .ei{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.entry .eo{flex:1}
+.entry .em{font-size:14px;font-weight:600}
+.entry .et{font-size:11px;color:var(--sub);margin-top:2px}
+.entry .eq{font-size:10px;color:var(--blue);margin-top:2px}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:20px;right:20px;max-width:400px;margin:0 auto;background:#1d1d1f;color:#fff;border-radius:10px;padding:13px 18px;text-align:center;font-size:14px;opacity:0;transform:translateY(12px);transition:all .35s;pointer-events:none;z-index:1000}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-inner{background:var(--card);border-radius:20px 20px 0 0;padding:32px 24px 36px;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:70vh;overflow-y:auto;width:100%;max-width:500px}
+.modal-overlay.show .modal-inner{transform:translateY(0)}
+.modal-inner::-webkit-scrollbar{display:none}
+.modal-inner .mq{font-size:18px;line-height:1.8;font-family:Georgia,"Noto Serif SC","Songti SC",serif;text-align:center;margin-bottom:16px}
+.modal-inner .ma{text-align:center;font-size:15px;color:var(--sub);margin-bottom:4px}
+.modal-inner .ms{text-align:center;font-size:12px;color:var(--sub);opacity:.7;margin-bottom:16px}
+.modal-inner .mtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px}
+.modal-inner .mtags span{font-size:12px;color:var(--blue);background:rgba(0,122,255,.08);padding:4px 12px;border-radius:12px}
+.btn-close{display:block;margin:8px auto 0;background:var(--blue);color:#fff;border:0;border-radius:14px;padding:12px 28px;font-size:14px;font-weight:500;cursor:pointer}
+
+/* Responsive */
+@media(min-width:768px){
+body{justify-content:center;padding:40px}
+.philo-container{width:420px;height:850px;border-radius:44px;border:1px solid rgba(255,255,255,.2);box-shadow:0 25px 60px rgba(0,0,0,.15);overflow:hidden;display:flex;flex-direction:column;position:relative;background:var(--bg)}
+body{background:#1a1a1e}
+}
+
+/* Loading */
+.loading{text-align:center;padding:40px 0;color:var(--sub)}
+.loading .spinner{width:32px;height:32px;border:3px solid rgba(0,122,255,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="philo-container" id="app">
+<header>
+<div><h1>Philo</h1><div class="header-date" id="headerDate"></div></div>
+<div class="header-right"><button onclick="refreshDaily()" title="换一句" id="refreshBtn">↻</button></div>
+</header>
+<main>
+<!-- Daily View -->
+<div class="view active" id="viewDaily"><div id="dailyContent"></div></div>
+<!-- Mood View -->
+<div class="view" id="viewMood"><div id="moodContent"></div></div>
+<!-- History View -->
+<div class="view" id="viewHistory"><div id="historyContent"></div></div>
+</main>
+<nav class="tab-bar">
+<button class="active" onclick="switchTab('daily')">
+<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+<span>今日</span>
+</button>
+<button onclick="switchTab('mood')">
+<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+<span>心情</span>
+</button>
+<button onclick="switchTab('history')">
+<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+<span>日记</span>
+</button>
+</nav>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+<div class="modal-inner"><div id="modalBody"></div><button class="btn-close" onclick="closeModal()">关闭</button></div>
+</div>
+<script>
+const Q = [
+    {
+        "text": "我们听到的一切都是一个观点，不是事实。我们看见的一切都是一个视角，不是真相。",
+        "author": "马可·奥勒留",
+        "source": "《沉思录》",
+        "era": "古罗马",
+        "tags": ["观点", "视角", "真相"],
+        "moodCategories": ["anxious", "uncertain", "contemplative"]
+    },
+    {
+        "text": "人的烦恼皆源于人际关系。",
+        "author": "阿德勒",
+        "source": "《自卑与超越》",
+        "era": "现代",
+        "tags": ["人际", "烦恼"],
+        "moodCategories": ["anxious", "lonely", "sad"]
+    },
+    {
+        "text": "改变你能改变的，接受你不能改变的，用智慧区分这两者。",
+        "author": "埃皮克提图",
+        "source": "《语录》",
+        "era": "古希腊",
+        "tags": ["斯多葛", "接受", "改变"],
+        "moodCategories": ["anxious", "overwhelmed", "uncertain"]
+    },
+    {
+        "text": "你担心的事情大多数永远不会发生。",
+        "author": "塞涅卡",
+        "source": "《道德书简》",
+        "era": "古罗马",
+        "tags": ["担忧", "焦虑", "斯多葛"],
+        "moodCategories": ["anxious", "weary"]
+    },
+    {
+        "text": "不是因为事情困难，我们不敢做；而是因为我们不敢做，事情才变得困难。",
+        "author": "塞涅卡",
+        "source": "《道德书简》",
+        "era": "古罗马",
+        "tags": ["勇气", "行动"],
+        "moodCategories": ["anxious", "inspired"]
+    },
+    {
+        "text": "焦虑是自由的眩晕。",
+        "author": "索伦·克尔凯郭尔",
+        "source": "《恐惧的概念》",
+        "era": "19世纪",
+        "tags": ["焦虑", "自由", "存在主义"],
+        "moodCategories": ["anxious", "contemplative"]
+    },
+    {
+        "text": "此刻即是你全部的生命。",
+        "author": "马可·奥勒留",
+        "source": "《沉思录》",
+        "era": "古罗马",
+        "tags": ["当下", "生命", "斯多葛"],
+        "moodCategories": ["anxious", "overwhelmed", "weary", "contemplative"]
+    },
+    {
+        "text": "幸福不是拥有一切，而是珍惜已经拥有的一切。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["知足", "幸福"],
+        "moodCategories": ["anxious", "grateful", "peaceful"]
+    },
+    {
+        "text": "世上没有什么东西能像平静一样可靠地带来心灵的安宁。",
+        "author": "西塞罗",
+        "source": "《论义务》",
+        "era": "古罗马",
+        "tags": ["平静", "安宁"],
+        "moodCategories": ["anxious", "peaceful"]
+    },
+    {
+        "text": "把每件事都当作生命中的最后一件事来做，你便不再焦虑。",
+        "author": "马可·奥勒留",
+        "source": "《沉思录》",
+        "era": "古罗马",
+        "tags": ["专注", "当下", "斯多葛"],
+        "moodCategories": ["anxious", "overwhelmed", "contemplative"]
+    },
+    {
+        "text": "悲伤是爱的延续——你爱得有多深，悲伤就有多深。",
+        "author": "柏拉图",
+        "source": "《斐多篇》",
+        "era": "古希腊",
+        "tags": ["悲伤", "爱"],
+        "moodCategories": ["sad", "melancholic"]
+    },
+    {
+        "text": "痛苦是暂时的，放弃是永恒的。",
+        "author": "弗朗茨·卡夫卡",
+        "source": "《随笔》",
+        "era": "20世纪",
+        "tags": ["痛苦", "坚持"],
+        "moodCategories": ["sad", "overwhelmed", "weary"]
+    },
+    {
+        "text": "生命是一袭华美的袍，爬满了蚤子。",
+        "author": "张爱玲",
+        "source": "《天才梦》",
+        "era": "现代",
+        "tags": ["生命", "痛苦", "美丽"],
+        "moodCategories": ["sad", "melancholic", "contemplative"]
+    },
+    {
+        "text": "我没有失败。我只是发现了一万种行不通的方法。",
+        "author": "托马斯·爱迪生",
+        "source": "—",
+        "era": "现代",
+        "tags": ["失败", "坚持"],
+        "moodCategories": ["sad", "weary", "inspired"]
+    },
+    {
+        "text": "一个人如果知道为什么而活，就可以忍受任何一种生活。",
+        "author": "弗里德里希·尼采",
+        "source": "《偶像的黄昏》",
+        "era": "19世纪",
+        "tags": ["意义", "力量", "存在主义"],
+        "moodCategories": ["sad", "overwhelmed", "weary", "inspired"]
+    },
+    {
+        "text": "凡事都有定期，天下万务都有定时。哭有时，笑有时；哀恸有时，跳舞有时。",
+        "author": "所罗门",
+        "source": "《传道书》",
+        "era": "古代",
+        "tags": ["时间", "周期", "智慧"],
+        "moodCategories": ["sad", "melancholic", "peaceful"]
+    },
+    {
+        "text": "所谓深渊，下去，也是前程万里。",
+        "author": "木心",
+        "source": "《素履之往》",
+        "era": "现代",
+        "tags": ["希望", "绝望"],
+        "moodCategories": ["sad", "hopeful", "inspired"]
+    },
+    {
+        "text": "正因为你在玫瑰上花费了时间，才使你的玫瑰如此重要。",
+        "author": "安托万·德·圣-埃克苏佩里",
+        "source": "《小王子》",
+        "era": "20世纪",
+        "tags": ["爱", "时间", "意义"],
+        "moodCategories": ["sad", "lonely", "grateful"]
+    },
+    {
+        "text": "有时治愈，常常帮助，总是安慰。",
+        "author": "特鲁多医生",
+        "source": "—",
+        "era": "19世纪",
+        "tags": ["治愈", "安慰", "医者"],
+        "moodCategories": ["sad", "weary", "hopeful"]
+    },
+    {
+        "text": "无论多么漫长的黑夜，黎明终将到来。",
+        "author": "柏拉图",
+        "source": "《理想国》",
+        "era": "古希腊",
+        "tags": ["希望", "光明"],
+        "moodCategories": ["sad", "hopeful", "joyful"]
+    },
+    {
+        "text": "愤怒是拿别人的错误惩罚自己。",
+        "author": "塞涅卡",
+        "source": "《论愤怒》",
+        "era": "古罗马",
+        "tags": ["愤怒", "智慧"],
+        "moodCategories": ["angry", "contemplative"]
+    },
+    {
+        "text": "水至清则无鱼，人至察则无徒。",
+        "author": "班固",
+        "source": "《汉书》",
+        "era": "汉代",
+        "tags": ["宽容", "智慧"],
+        "moodCategories": ["angry", "peaceful"]
+    },
+    {
+        "text": "以直报怨，以德报德。",
+        "author": "孔子",
+        "source": "《论语》",
+        "era": "春秋",
+        "tags": ["公正", "为人"],
+        "moodCategories": ["angry", "contemplative"]
+    },
+    {
+        "text": "暴怒是短暂的疯狂。",
+        "author": "贺拉斯",
+        "source": "《书简集》",
+        "era": "古罗马",
+        "tags": ["愤怒", "自省"],
+        "moodCategories": ["angry"]
+    },
+    {
+        "text": "任何人对你的冒犯，都伤害不到你，除非你允许它伤害你。",
+        "author": "埃皮克提图",
+        "source": "《语录》",
+        "era": "古希腊",
+        "tags": ["斯多葛", "冒犯", "内心"],
+        "moodCategories": ["angry", "anxious", "peaceful"]
+    },
+    {
+        "text": "不要因为他人的愚蠢而毁灭自己的平静。",
+        "author": "塞涅卡",
+        "source": "《论心灵之宁静》",
+        "era": "古罗马",
+        "tags": ["平静", "包容"],
+        "moodCategories": ["angry", "peaceful", "overwhelmed"]
+    },
+    {
+        "text": "宽容是智慧的一部分。",
+        "author": "蒙田",
+        "source": "《随笔集》",
+        "era": "16世纪",
+        "tags": ["宽容", "智慧"],
+        "moodCategories": ["angry", "contemplative"]
+    },
+    {
+        "text": "报复一个人最好的方式，就是不要活成他期望的样子。",
+        "author": "马可·奥勒留",
+        "source": "《沉思录》",
+        "era": "古罗马",
+        "tags": ["斯多葛", "尊严"],
+        "moodCategories": ["angry", "inspired"]
+    },
+    {
+        "text": "不能主宰自己的人，永远是个奴隶。",
+        "author": "歌德",
+        "source": "《格言与反思》",
+        "era": "18世纪",
+        "tags": ["自律", "自由", "尊严"],
+        "moodCategories": ["angry", "inspired", "contemplative"]
+    },
+    {
+        "text": "孤独是在人群中找不到自己的同类，而寂寞是在独处时找不到自己。",
+        "author": "尼采",
+        "source": "《查拉图斯特拉如是说》",
+        "era": "19世纪",
+        "tags": ["孤独", "自我"],
+        "moodCategories": ["lonely", "contemplative"]
+    },
+    {
+        "text": "一个人只有在孤独的时候才能成为自己。",
+        "author": "亚瑟·叔本华",
+        "source": "《人生的智慧》",
+        "era": "19世纪",
+        "tags": ["孤独", "自我"],
+        "moodCategories": ["lonely", "peaceful"]
+    },
+    {
+        "text": "我独自一人，但并不孤独。",
+        "author": "塞涅卡",
+        "source": "《道德书简》",
+        "era": "古罗马",
+        "tags": ["孤独", "自足"],
+        "moodCategories": ["lonely", "peaceful"]
+    },
+    {
+        "text": "世界上最遥远的距离，是我就站在你面前，你却不知道我爱你。",
+        "author": "泰戈尔",
+        "source": "《飞鸟集》",
+        "era": "现代",
+        "tags": ["距离", "情感"],
+        "moodCategories": ["lonely", "sad"]
+    },
+    {
+        "text": "人生而孤独，这是我们的宿命，也是我们的自由。",
+        "author": "让-保罗·萨特",
+        "source": "《存在与虚无》",
+        "era": "20世纪",
+        "tags": ["存在主义", "自由", "孤独"],
+        "moodCategories": ["lonely", "contemplative", "hopeful"]
+    },
+    {
+        "text": "孤独是灵魂的常态。",
+        "author": "周国平",
+        "source": "《人与永恒》",
+        "era": "现代",
+        "tags": ["孤独", "灵魂"],
+        "moodCategories": ["lonely", "melancholic"]
+    },
+    {
+        "text": "独处是一种能力，不是每个人都能拥有。",
+        "author": "帕斯卡",
+        "source": "《思想录》",
+        "era": "17世纪",
+        "tags": ["独处", "思考"],
+        "moodCategories": ["lonely", "contemplative"]
+    },
+    {
+        "text": "当你知道自己是谁，你就不会被世界遗忘。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["自知", "存在"],
+        "moodCategories": ["lonely", "hopeful", "inspired"]
+    },
+    {
+        "text": "世上只有一种英雄主义，就是在认清生活真相之后依然热爱生活。",
+        "author": "罗曼·罗兰",
+        "source": "《米开朗基罗传》",
+        "era": "20世纪",
+        "tags": ["英雄主义", "热爱", "勇气"],
+        "moodCategories": ["overwhelmed", "weary", "inspired", "hopeful"]
+    },
+    {
+        "text": "滴水穿石，不是因力量大，而是因日夜不舍。",
+        "author": "荀子",
+        "source": "《劝学》",
+        "era": "战国",
+        "tags": ["坚持", "毅力"],
+        "moodCategories": ["overwhelmed", "weary", "inspired"]
+    },
+    {
+        "text": "千里之行，始于足下。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["开始", "行动"],
+        "moodCategories": ["overwhelmed", "inspired", "hopeful"]
+    },
+    {
+        "text": "不要试图一次扛起整个世界，你只需要抬起你的脚，迈出一步。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["行动", "从容"],
+        "moodCategories": ["overwhelmed", "anxious", "weary"]
+    },
+    {
+        "text": "从容，是人生最好的姿态。",
+        "author": "庄子",
+        "source": "《逍遥游》",
+        "era": "战国",
+        "tags": ["从容", "逍遥"],
+        "moodCategories": ["overwhelmed", "peaceful"]
+    },
+    {
+        "text": "知止而后有定，定而后能静，静而后能安。",
+        "author": "曾子",
+        "source": "《大学》",
+        "era": "战国",
+        "tags": ["止", "静", "安"],
+        "moodCategories": ["overwhelmed", "peaceful", "anxious"]
+    },
+    {
+        "text": "简化你的生活。少即是多。",
+        "author": "埃皮克提图",
+        "source": "《语录》",
+        "era": "古希腊",
+        "tags": ["斯多葛", "简化"],
+        "moodCategories": ["overwhelmed", "peaceful"]
+    },
+    {
+        "text": "事不避难者进，志不求易者成。",
+        "author": "范晔",
+        "source": "《后汉书》",
+        "era": "南北朝",
+        "tags": ["坚韧", "志向"],
+        "moodCategories": ["overwhelmed", "inspired", "weary"]
+    },
+    {
+        "text": "哀莫大于心死，而人死亦次之。",
+        "author": "庄子",
+        "source": "《庄子·田子方》",
+        "era": "战国",
+        "tags": ["精神", "绝望"],
+        "moodCategories": ["melancholic", "sad", "lonely"]
+    },
+    {
+        "text": "人生如逆旅，我亦是行人。",
+        "author": "苏轼",
+        "source": "《临江仙》",
+        "era": "宋代",
+        "tags": ["人生", "过客"],
+        "moodCategories": ["melancholic", "contemplative"]
+    },
+    {
+        "text": "此情可待成追忆，只是当时已惘然。",
+        "author": "李商隐",
+        "source": "《锦瑟》",
+        "era": "唐代",
+        "tags": ["回忆", "遗憾"],
+        "moodCategories": ["melancholic", "sad"]
+    },
+    {
+        "text": "忧郁是思考的影子。",
+        "author": "亚里士多德",
+        "source": "《形而上学》",
+        "era": "古希腊",
+        "tags": ["忧郁", "思考"],
+        "moodCategories": ["melancholic", "contemplative"]
+    },
+    {
+        "text": "一切皆流，无物常驻。",
+        "author": "赫拉克利特",
+        "source": "《残篇》",
+        "era": "古希腊",
+        "tags": ["变化", "永恒"],
+        "moodCategories": ["melancholic", "contemplative", "peaceful"]
+    },
+    {
+        "text": "万物皆有裂痕，那是光照进来的地方。",
+        "author": "莱昂纳德·科恩",
+        "source": "《颂歌》",
+        "era": "20世纪",
+        "tags": ["缺憾", "希望", "美"],
+        "moodCategories": ["melancholic", "hopeful", "sad"]
+    },
+    {
+        "text": "人生有味是清欢。",
+        "author": "苏轼",
+        "source": "《浣溪沙》",
+        "era": "宋代",
+        "tags": ["清欢", "淡泊"],
+        "moodCategories": ["melancholic", "peaceful", "grateful"]
+    },
+    {
+        "text": "人生最大的荣耀，不在于从不跌倒，而在于每次跌倒后都能爬起来。",
+        "author": "孔子",
+        "source": "《论语》",
+        "era": "春秋",
+        "tags": ["坚韧", "勇气"],
+        "moodCategories": ["weary", "inspired", "overwhelmed"]
+    },
+    {
+        "text": "休息是为了走更远的路。",
+        "author": "奥维德",
+        "source": "《哀歌集》",
+        "era": "古罗马",
+        "tags": ["休息", "坚持"],
+        "moodCategories": ["weary", "peaceful"]
+    },
+    {
+        "text": "不要因为走得太远，而忘了为什么出发。",
+        "author": "纪伯伦",
+        "source": "《先知》",
+        "era": "20世纪",
+        "tags": ["初心", "旅程", "反思"],
+        "moodCategories": ["weary", "contemplative", "uncertain"]
+    },
+    {
+        "text": "纵有疾风起，人生不言弃。",
+        "author": "瓦雷里",
+        "source": "《海滨墓园》",
+        "era": "20世纪",
+        "tags": ["坚韧", "勇气"],
+        "moodCategories": ["weary", "inspired", "overwhelmed"]
+    },
+    {
+        "text": "路漫漫其修远兮，吾将上下而求索。",
+        "author": "屈原",
+        "source": "《离骚》",
+        "era": "战国",
+        "tags": ["求索", "坚持"],
+        "moodCategories": ["weary", "inspired", "uncertain"]
+    },
+    {
+        "text": "一切都会过去，唯有真理永存。",
+        "author": "所罗门",
+        "source": "《传道书》",
+        "era": "古代",
+        "tags": ["永恒", "变化"],
+        "moodCategories": ["weary", "peaceful", "hopeful"]
+    },
+    {
+        "text": "你无法改变风向，但可以调整风帆。",
+        "author": "塞涅卡",
+        "source": "《道德书简》",
+        "era": "古罗马",
+        "tags": ["适应", "控制", "斯多葛"],
+        "moodCategories": ["uncertain", "overwhelmed", "inspired"]
+    },
+    {
+        "text": "人生最大的智慧，是知道自己不知道。",
+        "author": "苏格拉底",
+        "source": "《申辩篇》",
+        "era": "古希腊",
+        "tags": ["自知", "智慧"],
+        "moodCategories": ["uncertain", "contemplative"]
+    },
+    {
+        "text": "道可道，非常道。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["道", "语言", "智慧"],
+        "moodCategories": ["uncertain", "contemplative"]
+    },
+    {
+        "text": "前途是光明的，道路是曲折的。",
+        "author": "毛泽东",
+        "source": "《关于重庆谈判》",
+        "era": "现代",
+        "tags": ["前景", "努力"],
+        "moodCategories": ["uncertain", "hopeful", "weary"]
+    },
+    {
+        "text": "当你犹豫要不要做某件事时，答案通常是不做。",
+        "author": "孔子",
+        "source": "《论语》",
+        "era": "春秋",
+        "tags": ["决策", "犹豫"],
+        "moodCategories": ["uncertain", "contemplative"]
+    },
+    {
+        "text": "莫愁前路无知己，天下谁人不识君。",
+        "author": "高适",
+        "source": "《别董大》",
+        "era": "唐代",
+        "tags": ["离别", "自信", "友情"],
+        "moodCategories": ["uncertain", "lonely", "hopeful"]
+    },
+    {
+        "text": "山重水复疑无路，柳暗花明又一村。",
+        "author": "陆游",
+        "source": "《游山西村》",
+        "era": "宋代",
+        "tags": ["希望", "转折"],
+        "moodCategories": ["uncertain", "hopeful", "inspired"]
+    },
+    {
+        "text": "人生得意须尽欢，莫使金樽空对月。",
+        "author": "李白",
+        "source": "《将进酒》",
+        "era": "唐代",
+        "tags": ["欢乐", "及时行乐"],
+        "moodCategories": ["joyful", "inspired"]
+    },
+    {
+        "text": "幸福就是身体无痛苦，灵魂无纷扰。",
+        "author": "伊壁鸠鲁",
+        "source": "《致美诺西斯》",
+        "era": "古希腊",
+        "tags": ["幸福", "快乐", "伊壁鸠鲁"],
+        "moodCategories": ["joyful", "peaceful", "grateful"]
+    },
+    {
+        "text": "笑，就是阳光，它能消除人们脸上的冬色。",
+        "author": "雨果",
+        "source": "《悲惨世界》",
+        "era": "19世纪",
+        "tags": ["笑", "温暖"],
+        "moodCategories": ["joyful", "hopeful"]
+    },
+    {
+        "text": "快乐是短暂的，但快乐的意义是永恒的。",
+        "author": "亚里士多德",
+        "source": "《尼各马可伦理学》",
+        "era": "古希腊",
+        "tags": ["快乐", "意义"],
+        "moodCategories": ["joyful", "contemplative"]
+    },
+    {
+        "text": "今天就是生命——唯一确凿的生命。",
+        "author": "列夫·托尔斯泰",
+        "source": "《战争与和平》",
+        "era": "19世纪",
+        "tags": ["当下", "生命"],
+        "moodCategories": ["joyful", "grateful", "inspired"]
+    },
+    {
+        "text": "知者乐水，仁者乐山。",
+        "author": "孔子",
+        "source": "《论语》",
+        "era": "春秋",
+        "tags": ["智慧", "仁爱", "自然"],
+        "moodCategories": ["joyful", "peaceful", "contemplative"]
+    },
+    {
+        "text": "盛年不重来，一日难再晨。及时当勉励，岁月不待人。",
+        "author": "陶渊明",
+        "source": "《杂诗》",
+        "era": "东晋",
+        "tags": ["珍惜", "时光"],
+        "moodCategories": ["joyful", "grateful", "inspired"]
+    },
+    {
+        "text": "知足者富。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["知足", "富足"],
+        "moodCategories": ["grateful", "peaceful", "joyful"]
+    },
+    {
+        "text": "感恩是灵魂的健康。",
+        "author": "柏拉图",
+        "source": "《蒂迈欧篇》",
+        "era": "古希腊",
+        "tags": ["感恩", "灵魂"],
+        "moodCategories": ["grateful", "contemplative"]
+    },
+    {
+        "text": "一粥一饭，当思来之不易。",
+        "author": "朱柏庐",
+        "source": "《朱子家训》",
+        "era": "明代",
+        "tags": ["感恩", "节俭"],
+        "moodCategories": ["grateful", "contemplative"]
+    },
+    {
+        "text": "记住你得到的，忘记你付出的。",
+        "author": "塞涅卡",
+        "source": "《论恩惠》",
+        "era": "古罗马",
+        "tags": ["感恩", "给予"],
+        "moodCategories": ["grateful", "joyful"]
+    },
+    {
+        "text": "活着本身就是一种奇迹。",
+        "author": "伏尔泰",
+        "source": "《哲学辞典》",
+        "era": "18世纪",
+        "tags": ["生命", "奇迹"],
+        "moodCategories": ["grateful", "joyful", "hopeful"]
+    },
+    {
+        "text": "感恩是美德中最渺小的，忘恩负义是恶习中最糟糕的。",
+        "author": "托马斯·富勒",
+        "source": "《格言集》",
+        "era": "17世纪",
+        "tags": ["感恩", "美德"],
+        "moodCategories": ["grateful"]
+    },
+    {
+        "text": "不以物喜，不以己悲。",
+        "author": "范仲淹",
+        "source": "《岳阳楼记》",
+        "era": "宋代",
+        "tags": ["豁达", "心态"],
+        "moodCategories": ["grateful", "peaceful", "contemplative"]
+    },
+    {
+        "text": "希望是醒着的梦。",
+        "author": "亚里士多德",
+        "source": "《诗学》",
+        "era": "古希腊",
+        "tags": ["希望", "梦想"],
+        "moodCategories": ["hopeful", "contemplative"]
+    },
+    {
+        "text": "长风破浪会有时，直挂云帆济沧海。",
+        "author": "李白",
+        "source": "《行路难》",
+        "era": "唐代",
+        "tags": ["信心", "未来"],
+        "moodCategories": ["hopeful", "inspired"]
+    },
+    {
+        "text": "黑夜给了我黑色的眼睛，我却用它寻找光明。",
+        "author": "顾城",
+        "source": "《一代人》",
+        "era": "现代",
+        "tags": ["希望", "光明"],
+        "moodCategories": ["hopeful", "inspired", "sad"]
+    },
+    {
+        "text": "冬天来了，春天还会远吗？",
+        "author": "雪莱",
+        "source": "《西风颂》",
+        "era": "19世纪",
+        "tags": ["希望", "季节"],
+        "moodCategories": ["hopeful", "sad", "weary"]
+    },
+    {
+        "text": "希望是一种坚持，使灵魂在困境中依然保持力量。",
+        "author": "塞涅卡",
+        "source": "《道德书简》",
+        "era": "古罗马",
+        "tags": ["希望", "力量"],
+        "moodCategories": ["hopeful", "weary"]
+    },
+    {
+        "text": "沉舟侧畔千帆过，病树前头万木春。",
+        "author": "刘禹锡",
+        "source": "《酬乐天扬州初逢席上见赠》",
+        "era": "唐代",
+        "tags": ["新生", "希望"],
+        "moodCategories": ["hopeful", "inspired"]
+    },
+    {
+        "text": "生活在别处。",
+        "author": "米兰·昆德拉",
+        "source": "《生活在别处》",
+        "era": "20世纪",
+        "tags": ["可能", "想象"],
+        "moodCategories": ["hopeful", "contemplative", "inspired"]
+    },
+    {
+        "text": "未经审视的人生不值得过。",
+        "author": "苏格拉底",
+        "source": "《申辩篇》",
+        "era": "古希腊",
+        "tags": ["反思", "人生", "哲学"],
+        "moodCategories": ["contemplative", "inspired"]
+    },
+    {
+        "text": "我思故我在。",
+        "author": "笛卡尔",
+        "source": "《方法论》",
+        "era": "17世纪",
+        "tags": ["思考", "存在"],
+        "moodCategories": ["contemplative"]
+    },
+    {
+        "text": "存在先于本质。",
+        "author": "让-保罗·萨特",
+        "source": "《存在主义是一种人道主义》",
+        "era": "20世纪",
+        "tags": ["存在主义", "自由"],
+        "moodCategories": ["contemplative", "inspired"]
+    },
+    {
+        "text": "知行合一。",
+        "author": "王阳明",
+        "source": "《传习录》",
+        "era": "明代",
+        "tags": ["知行", "心学"],
+        "moodCategories": ["contemplative", "inspired"]
+    },
+    {
+        "text": "大音希声，大象无形。",
+        "author": "老子",
+        "source": "《道德经》",
+        "era": "春秋",
+        "tags": ["大道", "无形"],
+        "moodCategories": ["contemplative", "peaceful"]
+    },
+    {
+        "text": "人是为了活着本身而活着，而不是为了活着之外的任何事物而活着。",
+        "author": "余华",
+        "source": "《活着》",
+        "era": "现代",
+        "tags": ["活着", "意义"],
+        "moodCategories": ["contemplative", "sad", "grateful"]
+    },
+    {
+        "text": "心静自然凉。",
+        "author": "白居易",
+        "source": "《苦热题恒寂师禅室》",
+        "era": "唐代",
+        "tags": ["宁静", "心境"],
+        "moodCategories": ["peaceful", "overwhelmed"]
+    },
+    {
+        "text": "若无闲事挂心头，便是人间好时节。",
+        "author": "无门慧开",
+        "source": "《无门关》",
+        "era": "宋代",
+        "tags": ["无事", "好时节"],
+        "moodCategories": ["peaceful", "grateful", "joyful"]
+    },
+    {
+        "text": "菩提本无树，明镜亦非台，本来无一物，何处惹尘埃。",
+        "author": "惠能",
+        "source": "《六祖坛经》",
+        "era": "唐代",
+        "tags": ["禅", "空", "清净"],
+        "moodCategories": ["peaceful", "contemplative"]
+    },
+    {
+        "text": "知止而后能静。",
+        "author": "曾子",
+        "source": "《大学》",
+        "era": "战国",
+        "tags": ["知止", "静"],
+        "moodCategories": ["peaceful", "overwhelmed", "anxious"]
+    },
+    {
+        "text": "内心的平和是最大的力量。",
+        "author": "西塞罗",
+        "source": "《论至善与至恶》",
+        "era": "古罗马",
+        "tags": ["平和", "力量"],
+        "moodCategories": ["peaceful", "inspired"]
+    },
+    {
+        "text": "宠辱不惊，闲看庭前花开花落。",
+        "author": "陈继儒",
+        "source": "《小窗幽记》",
+        "era": "明代",
+        "tags": ["淡泊", "从容"],
+        "moodCategories": ["peaceful", "contemplative"]
+    },
+    {
+        "text": "太阳每天都是新的。",
+        "author": "赫拉克利特",
+        "source": "《残篇》",
+        "era": "古希腊",
+        "tags": ["新生", "日常"],
+        "moodCategories": ["peaceful", "hopeful", "joyful"]
+    },
+    {
+        "text": "做你自己，因为其他人都有人做了。",
+        "author": "奥斯卡·王尔德",
+        "source": "《语录》",
+        "era": "19世纪",
+        "tags": ["个性", "真实"],
+        "moodCategories": ["inspired", "lonely", "joyful"]
+    },
+    {
+        "text": "活着，就是要在不可能中寻找可能。",
+        "author": "维克多·弗兰克尔",
+        "source": "《活出生命的意义》",
+        "era": "20世纪",
+        "tags": ["意义", "可能性"],
+        "moodCategories": ["inspired", "hopeful", "overwhelmed"]
+    },
+    {
+        "text": "行动不一定带来快乐，但没有行动则一定没有快乐。",
+        "author": "本杰明·迪斯雷利",
+        "source": "—",
+        "era": "19世纪",
+        "tags": ["行动", "快乐"],
+        "moodCategories": ["inspired", "joyful"]
+    },
+    {
+        "text": "不积跬步，无以至千里。",
+        "author": "荀子",
+        "source": "《劝学》",
+        "era": "战国",
+        "tags": ["积累", "持续"],
+        "moodCategories": ["inspired", "weary", "overwhelmed"]
+    },
+    {
+        "text": "志之所趋，无远弗届；穷山距海，不能限也。",
+        "author": "《格言联璧》",
+        "source": "—",
+        "era": "清代",
+        "tags": ["志向", "勇气"],
+        "moodCategories": ["inspired", "hopeful"]
+    },
+    {
+        "text": "人是自由的，人注定自由，人背负着自由的重量。",
+        "author": "让-保罗·萨特",
+        "source": "《存在与虚无》",
+        "era": "20世纪",
+        "tags": ["自由", "责任"],
+        "moodCategories": ["inspired", "anxious", "contemplative"]
+    },
+    {
+        "text": "莫等闲，白了少年头，空悲切。",
+        "author": "岳飞",
+        "source": "《满江红》",
+        "era": "宋代",
+        "tags": ["珍惜", "行动"],
+        "moodCategories": ["inspired", "contemplative"]
+    },
+    {
+        "text": "有所尝试，就有所收获。",
+        "author": "塞涅卡",
+        "source": "《论生命之短暂》",
+        "era": "古罗马",
+        "tags": ["尝试", "收获"],
+        "moodCategories": ["inspired", "hopeful"]
+    }
+]
+;
+const MOODS=[
+{id:'anxious',name:'焦虑',icon:'💛',c:'#ff9500',b:'rgba(255,149,0,.15)'},
+{id:'sad',name:'悲伤',icon:'💜',c:'#5856d6',b:'rgba(88,86,214,.15)'},
+{id:'angry',name:'愤怒',icon:'❤️',c:'#ff3b30',b:'rgba(255,59,48,.15)'},
+{id:'lonely',name:'孤独',icon:'🌙',c:'#af52de',b:'rgba(175,82,222,.15)'},
+{id:'overwhelmed',name:'不堪重负',icon:'🌪️',c:'#ff2d55',b:'rgba(255,45,85,.15)'},
+{id:'melancholic',name:'忧郁',icon:'🌤️',c:'#00c7be',b:'rgba(0,199,190,.15)'},
+{id:'uncertain',name:'迷茫',icon:'❓',c:'#a2845e',b:'rgba(162,132,94,.15)'},
+{id:'weary',name:'疲惫',icon:'😴',c:'#8e8e93',b:'rgba(142,142,147,.15)'},
+{id:'joyful',name:'喜悦',icon:'☀️',c:'#ffcc00',b:'rgba(255,204,0,.2)'},
+{id:'grateful',name:'感恩',icon:'💚',c:'#34c759',b:'rgba(52,199,89,.15)'},
+{id:'hopeful',name:'充满希望',icon:'✨',c:'#32ade6',b:'rgba(50,173,230,.15)'},
+{id:'contemplative',name:'沉思',icon:'📚',c:'#007aff',b:'rgba(0,122,255,.15)'},
+{id:'peaceful',name:'平静',icon:'🍃',c:'#34c759',b:'rgba(52,199,89,.15)'},
+{id:'inspired',name:'受鼓舞',icon:'⭐',c:'#ff9500',b:'rgba(255,149,0,.15)'}
+];
+
+let history = JSON.parse(localStorage.getItem('philo_history') || '[]');
+let currentMood = null;
+
+function toast(msg){
+const t=document.getElementById('toast');
+t.textContent=msg;t.classList.add('show');
+setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function switchTab(tab){
+const views={daily:'viewDaily',mood:'viewMood',history:'viewHistory'};
+document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+document.getElementById(views[tab]).classList.add('active');
+document.querySelectorAll('.tab-bar button').forEach((b,i)=>{
+b.classList.toggle('active',['daily','mood','history'][i]===tab);
+});
+if(tab==='daily')renderDaily();
+if(tab==='mood')renderMoodGrid();
+if(tab==='history')renderHistory();
+}
+
+function refreshDaily(){
+const btn=document.getElementById('refreshBtn');
+btn.style.transform='rotate(360deg)';btn.style.transition='transform .5s';
+setTimeout(()=>btn.style.transform='',500);
+renderDaily(true);
+}
+
+function renderDaily(forceRandom){
+const v=document.getElementById('dailyContent');
+const n=new Date();
+document.getElementById('headerDate').textContent=n.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+const idx=forceRandom?Math.floor(Math.random()*Q.length):n.getDate()%Q.length;
+const q=Q[idx];
+v.innerHTML='<div class="daily-head"><div class="label">今日哲思</div></div>'+
+'<div class="q-card" onclick="showQuote('+idx+')"><div class="q-open">「</div><div class="q-text">'+q.text+'</div><div class="q-author">—— '+q.author+'</div>'+(q.source?'<div class="q-source">'+q.source+'</div>':'')+'</div>'+
+'<hr class="divider">'+
+'<div class="mood-cta"><div class="mp">今天心情如何？</div><div class="ms">选择你的心情，获取匹配的哲思语录</div><button class="btn-primary" onclick="switchTab(\'mood\')">开始心情记录</button></div>';
+}
+
+function renderMoodGrid(){
+const v=document.getElementById('moodContent');
+v.innerHTML='<div class="mood-h">你现在感觉怎么样？</div><div class="mood-grid" id="moodGrid"></div><div id="moodResults"></div>';
+const g=document.getElementById('moodGrid');
+g.innerHTML=MOODS.map(m=>'<button class="mood-item" data-id="'+m.id+'" onclick="selectMood(\''+m.id+'\')"><div class="mi" style="background:'+m.b+';color:'+m.c+'">'+m.icon+'</div><div class="mn">'+m.name+'</div></button>').join('');
+document.getElementById('moodResults').innerHTML='';
+}
+
+function selectMood(id){
+currentMood=id;
+document.querySelectorAll('.mood-item').forEach(b=>b.classList.toggle('act',b.dataset.id===id));
+const mood=MOODS.find(m=>m.id===id);
+const match=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(id)).sort(()=>Math.random()-.5).slice(0,10);
+const r=document.getElementById('moodResults');
+if(!match.length){
+r.innerHTML='<div class="empty-state"><span class="ei">😔</span><span class="et">暂时没有匹配「'+mood.name+'」的语录</span></div>';
+return;
+}
+r.innerHTML='<div class="mood-results"><div class="r-h">'+mood.icon+' 给「'+mood.name+'」的慰藉</div>'+
+match.map((q,i)=>'<div class="q-card" onclick="showQuote('+Q.indexOf(q)+')" style="animation-delay:'+(i*0.05)+'s"><div class="q-open">「</div><div class="q-text">'+q.text+'</div><div class="q-author">—— '+q.author+'</div></div>').join('')+
+'<button class="btn-save" onclick="saveMood()">💾 记录此刻心情</button></div>';
+}
+
+function saveMood(){
+if(!currentMood){toast('请先选择一种心情');return;}
+const n=new Date();
+history.push({date:n.toISOString().slice(0,10),time:n.toTimeString().slice(0,5),mood:currentMood,ts:n.getTime()});
+localStorage.setItem('philo_history',JSON.stringify(history));
+toast('✅ 已记录！前往「日记」标签查看');
+const mood=MOODS.find(m=>m.id===currentMood);
+document.getElementById('moodResults').innerHTML+='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:8px">✅ 已保存到日记</div>';
+setTimeout(()=>{document.getElementById('moodResults').innerHTML='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:12px;padding:20px 0">✅ 已保存！去日记标签看看吧</div>';},1500);
+}
+
+function renderHistory(){
+const v=document.getElementById('historyContent');
+const total=history.length;
+let streak=0;
+const t=new Date();t.setHours(0,0,0,0);
+for(let d=new Date(t);;d.setDate(d.getDate()-1)){
+if(history.some(e=>e.date===d.toISOString().slice(0,10)))streak++;else break;
+}
+v.innerHTML='<div class="stats"><div class="stat"><span class="si">✅</span><span class="sv">'+total+'</span><span class="sl">总记录</span></div><div class="stat"><span class="si">🔥</span><span class="sv">'+streak+'</span><span class="sl">连续天数</span></div><div class="stat"><span class="si">📅</span><span class="sv">'+total+'</span><span class="sl">日记条数</span></div></div>';
+v.innerHTML+='<div class="section-h">最近一周心情概览</div>';
+const week=[];
+for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);week.push(d);}
+const weekMoods=week.map(d=>{const ds=d.toISOString().slice(0,10);const entries=history.filter(e=>e.date===ds);const cnt={};entries.forEach(e=>{cnt[e.mood]=(cnt[e.mood]||0)+1});let best=null,bestC=0;for(const[k,vc]of Object.entries(cnt)){if(vc>bestC){best=k;bestC=vc;}}return best;});
+const days=['一','二','三','四','五','六','日'];
+v.innerHTML+='<div class="week-grid">'+weekMoods.map((m,i)=>{
+const mood=MOODS.find(mo=>mo.id===m);
+if(!mood)return'<div class="week-item"><span class="wi">-</span><span class="wc">0</span><span class="wl">周'+(i===6?'日':days[i])+'</span></div>';
+return '<div class="week-item"><span class="wi">'+mood.icon+'</span><span class="wc">'+history.filter(e=>e.date===week[i].toISOString().slice(0,10)).length+'</span><span class="wl">'+mood.name+'</span></div>';
+}).join('')+'</div>';
+v.innerHTML+='<div class="section-h">历史记录</div>';
+if(!history.length){
+v.innerHTML+='<div class="empty-state"><span class="ei">📖</span><span class="et">还没有任何心情记录</span><span class="es">记录心情，开始你的哲学日记</span></div>';
+return;
+}
+const sorted=[...history].sort((a,b)=>b.ts-a.ts);
+v.innerHTML+='<div id="entryList">'+sorted.map((e,i)=>{
+const mood=MOODS.find(m=>m.id===e.mood);
+if(!mood)return'';
+return '<div class="entry" onclick="showEntry('+i+')"><div class="ei" style="background:'+mood.b+';color:'+mood.c+'">'+mood.icon+'</div><div class="eo"><div class="em">'+mood.name+'</div><div class="et">'+e.date+' '+e.time+'</div></div></div>';
+}).join('')+'</div>';
+}
+
+function showQuote(idx){
+const q=Q[idx];
+const mb=document.getElementById('modalBody');
+const tags=q.tags&&q.tags.length?'<div class="mtags">'+q.tags.map(t=>'<span>'+t+'</span>').join('')+'</div>':'';
+const source=(q.source||'')+(q.era?' · '+q.era:'');
+mb.innerHTML='<div class="mq">「'+q.text+'」</div><div class="ma">—— '+q.author+'</div>'+(source?'<div class="ms">'+source+'</div>':'')+tags;
+document.getElementById('modal').classList.add('show');
+}
+
+function showEntry(idx){
+const sorted=[...history].sort((a,b)=>b.ts-a.ts);
+const e=sorted[idx];
+if(!e)return;
+const mood=MOODS.find(m=>m.id===e.mood);
+const match=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(e.mood));
+const mb=document.getElementById('modalBody');
+mb.innerHTML='<div style="text-align:center;font-size:44px;margin-bottom:8px">'+(mood?mood.icon:'😶')+'</div>'+
+'<div style="text-align:center;font-size:18px;font-weight:600;margin-bottom:4px">'+(mood?mood.name:'未知')+'</div>'+
+'<div style="text-align:center;font-size:13px;color:var(--sub);margin-bottom:16px">'+e.date+' '+e.time+'</div>'+
+(match.length?'<div style="font-size:13px;color:var(--sub);margin-bottom:8px">当日可匹配的语录</div>'+
+match.slice(0,3).map(q=>'<div style="font-size:13px;line-height:1.5;padding:10px 0;border-top:1px solid rgba(0,0,0,.04)">「'+q.text+'」<br><span style="font-size:11px;color:var(--sub)">—— '+q.author+'</span></div>').join(''):'');
+document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+
+// Init
+renderDaily();
+</script>
+</body>
+</html>
