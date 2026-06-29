@@ -6,6 +6,7 @@
 <meta name="description" content="Philo - 哲学慰藉应用，每日一句古典哲学语录">
 <meta name="theme-color" content="#f5f5f7">
 <title>Philo — 哲学慰藉</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--blue:#007aff;--purple:#9757d9}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1025,8 +1026,26 @@ const MOODS=[
 {id:'inspired',name:'受鼓舞',icon:'⭐',c:'#ff9500',b:'rgba(255,149,0,.15)'}
 ];
 
+const _supabase = (typeof supabase !== 'undefined') ? supabase.createClient(
+  'https://mbrphuyqtmauaypircjo.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icnBodXlxdG1hdWF5cGlyY2pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTcxOTUsImV4cCI6MjA5ODM3MzE5NX0.264YNBwZaQ2SFuWmRd2vz2a1XbbsiL4Xc7FOIraqkHY'
+) : null;
 let history = JSON.parse(localStorage.getItem('philo_history') || '[]');
 let currentMood = null;
+
+(async () => {
+  if (!_supabase) return;
+  try {
+    const { data: { user } } = await _supabase.auth.signInAnonymously();
+    if (!user) return;
+    const { data: entries } = await _supabase.from('mood_entries').select('*').order('ts', { ascending: false });
+    if (entries && entries.length) {
+      const serverTs = new Set(entries.map(e => e.ts));
+      history = [...entries.map(e => ({ date: e.date, time: e.time, mood: e.mood, ts: e.ts })), ...history.filter(h => !serverTs.has(h.ts))];
+      localStorage.setItem('philo_history', JSON.stringify(history));
+    }
+  } catch(e) { console.warn('Supabase sync failed:', e); }
+})();
 
 function toast(msg){
 const t=document.getElementById('toast');
@@ -1091,8 +1110,10 @@ match.map((q,i)=>'<div class="q-card" onclick="showQuote('+Q.indexOf(q)+')" styl
 function saveMood(){
 if(!currentMood){toast('请先选择一种心情');return;}
 const n=new Date();
-history.push({date:n.toISOString().slice(0,10),time:n.toTimeString().slice(0,5),mood:currentMood,ts:n.getTime()});
+const entry={date:n.toISOString().slice(0,10),time:n.toTimeString().slice(0,5),mood:currentMood,ts:n.getTime()};
+history.push(entry);
 localStorage.setItem('philo_history',JSON.stringify(history));
+if(_supabase){try{_supabase.from('mood_entries').insert({date:entry.date,time:entry.time,mood:entry.mood,ts:entry.ts}).catch(()=>{});}catch(e){}}
 toast('✅ 已记录！前往「日记」标签查看');
 const mood=MOODS.find(m=>m.id===currentMood);
 document.getElementById('moodResults').innerHTML+='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:8px">✅ 已保存到日记</div>';
