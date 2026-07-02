@@ -5,22 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="description" content="Philo - 哲学慰藉应用，每日一句古典哲学语录">
 <meta name="theme-color" content="#f5f5f7">
+<meta name="color-scheme" content="light dark">
 <title>Philo — 哲学慰藉</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--blue:#007aff;--purple:#9757d9}
+:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--sub:#86868b;--blue:#007aff;--purple:#9757d9;--header-bg:rgba(245,245,247,.85);--tab-bg:rgba(255,255,255,.9);--border-color:rgba(0,0,0,.06);--overlay-bg:rgba(0,0,0,.4);--toast-bg:#1d1d1f;--toast-color:#fff}:root[data-theme="dark"]{--bg:#1c1c1e;--card:#2c2c2e;--text:#f5f5f7;--sub:#98989d;--blue:#0a84ff;--purple:#bf5af2;--header-bg:rgba(28,28,30,.85);--tab-bg:rgba(44,44,46,.9);--border-color:rgba(255,255,255,.1);--overlay-bg:rgba(0,0,0,.65);--toast-bg:#f5f5f7;--toast-color:#1d1d1f}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",sans-serif;color:var(--text);overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.philo-container{display:flex;flex-direction:column;flex:1;min-height:0}
 
 /* Header */
-header{background:rgba(245,245,247,.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:12px 20px 8px;padding-top:calc(12px + env(safe-area-inset-top));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right));border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;z-index:10}
+header{background:var(--header-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:12px 20px 8px;padding-top:calc(12px + env(safe-area-inset-top));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right));border-bottom:1px solid var(--border-color);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:relative;z-index:10}
 header h1{font-size:26px;font-weight:700;letter-spacing:-.5px;background:linear-gradient(135deg,#007aff,#9757d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 header .header-date{font-size:12px;color:var(--sub);margin-top:2px}
 header .header-right button{background:0;border:0;font-size:20px;cursor:pointer;color:var(--blue);width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:background .15s}
 header .header-right button:hover{background:rgba(0,122,255,.1)}
 
 /* Tab Bar */
-.tab-bar{display:flex;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);flex-shrink:0;position:relative;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
+.tab-bar{display:flex;background:var(--tab-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid var(--border-color);flex-shrink:0;position:relative;z-index:10;padding-bottom:env(safe-area-inset-bottom)}
 .tab-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 12px;background:0;border:0;cursor:pointer;color:var(--sub);transition:color .2s;font-size:11px;font-weight:500}
 .tab-bar button.active{color:var(--blue)}
 .tab-bar button svg{width:24px;height:24px;display:block;margin:0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -43,7 +43,7 @@ main{flex:1;overflow:hidden;position:relative}
 .q-card .q-source{text-align:right;font-size:11px;color:var(--sub);opacity:.6;margin-top:2px}
 .divider{margin:16px -20px;border:0;border-top:1px solid rgba(0,0,0,.06)}
 .mood-cta{text-align:center;padding:8px 0}
-.mood-cta .mp{font-size:16px;font-weight:600;margin-bottom:4px}
+.mood-cta .mp{font-size:16px;font-weight:600;margin-bottom:4px;color:var(--text)}
 .mood-cta .ms{font-size:12px;color:var(--sub);margin-bottom:16px}
 .btn-primary{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:22px;padding:12px 32px;font-size:15px;font-weight:500;cursor:pointer;transition:transform .2s,box-shadow .2s}
 .btn-primary:hover{transform:scale(1.03);box-shadow:0 4px 16px rgba(0,122,255,.35)}
@@ -55,30 +55,33 @@ main{flex:1;overflow:hidden;position:relative}
 .mood-item:hover{background:rgba(0,122,255,.05)}
 .mood-item.act{background:rgba(0,122,255,.1)}
 .mood-item .mi{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all .2s}
-.mood-item.act .mi{color:#fff!important;transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.mood-item.act .mi{color:#fff!important;transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .mood-item .mn{font-size:11px;color:var(--sub);text-align:center;line-height:1.3}
 .mood-item.act .mn{color:var(--blue);font-weight:600}
 .mood-results .r-h{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .btn-save{display:block;width:100%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;border:0;border-radius:12px;padding:13px;font-size:14px;font-weight:500;cursor:pointer;margin-top:12px;transition:transform .2s}
 .btn-save:hover{transform:scale(1.02)}
 .empty-state{text-align:center;padding:30px 0;color:var(--sub)}
+ .mood-refresh{background:0;border:0;font-size:18px;cursor:pointer;color:var(--blue);padding:4px;border-radius:8px;transition:transform .3s,background .15s;margin-left:auto;flex-shrink:0;line-height:1}
+ .mood-refresh:hover{background:rgba(0,122,255,.1)}
+ .mood-refresh.spin{transform:rotate(360deg)}
 .empty-state .ei{font-size:40px;display:block;margin-bottom:8px;opacity:.4}
-.empty-state .et{font-size:14px;margin-bottom:4px}
+.empty-state .et{font-size:14px;margin-bottom:4px;color:var(--sub)}
 .empty-state .es{font-size:12px;opacity:.7}
 
 /* History View */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
-.stat{border-radius:12px;padding:14px 8px;text-align:center;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.stat{border-radius:12px;padding:14px 8px;text-align:center;background:var(--card);box-shadow:0 1px 3px var(--border-color)}
 .stat .si{font-size:20px;display:block;margin-bottom:4px}
 .stat .sv{font-size:24px;font-weight:700;display:block}
 .stat .sl{font-size:11px;color:var(--sub);margin-top:4px;display:block}
 .section-h{font-size:15px;font-weight:600;margin-bottom:12px}
-.week-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--card);border-radius:12px;padding:16px 12px;margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.week-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:var(--card);border-radius:12px;padding:16px 12px;margin-bottom:24px;box-shadow:0 1px 3px var(--border-color)}
 .week-item{text-align:center}
 .week-item .wi{font-size:20px;display:block;margin-bottom:4px}
 .week-item .wc{font-size:14px;font-weight:600;display:block}
 .week-item .wl{font-size:10px;color:var(--sub);display:block;margin-top:2px}
-.entry{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);cursor:pointer;transition:transform .2s}
+.entry{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px var(--border-color);cursor:pointer;transition:transform .2s}
 .entry:hover{transform:translateY(-1px)}
 .entry .ei{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .entry .eo{flex:1}
@@ -87,11 +90,11 @@ main{flex:1;overflow:hidden;position:relative}
 .entry .eq{font-size:10px;color:var(--blue);margin-top:2px}
 
 /* Toast */
-.toast{position:fixed;bottom:90px;left:20px;right:20px;max-width:400px;margin:0 auto;background:#1d1d1f;color:#fff;border-radius:10px;padding:13px 18px;text-align:center;font-size:14px;opacity:0;transform:translateY(12px);transition:all .35s;pointer-events:none;z-index:1000}
+.toast{position:fixed;bottom:90px;left:20px;right:20px;max-width:400px;margin:0 auto;background:var(--toast-bg);color:var(--toast-color);border-radius:10px;padding:13px 18px;text-align:center;font-size:14px;opacity:0;transform:translateY(12px);transition:all .35s;pointer-events:none;z-index:1000}
 .toast.show{opacity:1;transform:translateY(0)}
 
 /* Modal */
-.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center}
+.modal-overlay{position:fixed;inset:0;z-index:500;background:var(--overlay-bg);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center}
 .modal-overlay.show{opacity:1;pointer-events:auto}
 .modal-inner{background:var(--card);border-radius:20px 20px 0 0;padding:32px 24px 36px;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:70vh;overflow-y:auto;width:100%;max-width:500px}
 .modal-overlay.show .modal-inner{transform:translateY(0)}
@@ -100,7 +103,7 @@ main{flex:1;overflow:hidden;position:relative}
 .modal-inner .ma{text-align:center;font-size:15px;color:var(--sub);margin-bottom:4px}
 .modal-inner .ms{text-align:center;font-size:12px;color:var(--sub);opacity:.7;margin-bottom:16px}
 .modal-inner .mtags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px}
-.modal-inner .mtags span{font-size:12px;color:var(--blue);background:rgba(0,122,255,.08);padding:4px 12px;border-radius:12px}
+.modal-inner .mtags span{font-size:12px;color:var(--blue);background:rgba(10,132,255,.15);padding:4px 12px;border-radius:12px}
 .btn-close{display:block;margin:8px auto 0;background:var(--blue);color:#fff;border:0;border-radius:14px;padding:12px 28px;font-size:14px;font-weight:500;cursor:pointer}
 
 /* Responsive */
@@ -120,7 +123,7 @@ body{background:#1a1a1e}
 <div class="philo-container" id="app">
 <header>
 <div><h1>Philo</h1><div class="header-date" id="headerDate"></div></div>
-<div class="header-right"><button onclick="refreshDaily()" title="换一句" id="refreshBtn">↻</button></div>
+<div class="header-right"><button onclick="toggleTheme()" title="切换主题" id="themeBtn">🌙</button><button onclick="refreshDaily()" title="换一句" id="refreshBtn">↻</button></div>
 </header>
 <main>
 <!-- Daily View -->
@@ -1026,26 +1029,8 @@ const MOODS=[
 {id:'inspired',name:'受鼓舞',icon:'⭐',c:'#ff9500',b:'rgba(255,149,0,.15)'}
 ];
 
-const _supabase = (typeof supabase !== 'undefined') ? supabase.createClient(
-  'https://mbrphuyqtmauaypircjo.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1icnBodXlxdG1hdWF5cGlyY2pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3OTcxOTUsImV4cCI6MjA5ODM3MzE5NX0.264YNBwZaQ2SFuWmRd2vz2a1XbbsiL4Xc7FOIraqkHY'
-) : null;
 let history = JSON.parse(localStorage.getItem('philo_history') || '[]');
 let currentMood = null;
-
-(async () => {
-  if (!_supabase) return;
-  try {
-    const { data: { user } } = await _supabase.auth.signInAnonymously();
-    if (!user) return;
-    const { data: entries } = await _supabase.from('mood_entries').select('*').order('ts', { ascending: false });
-    if (entries && entries.length) {
-      const serverTs = new Set(entries.map(e => e.ts));
-      history = [...entries.map(e => ({ date: e.date, time: e.time, mood: e.mood, ts: e.ts })), ...history.filter(h => !serverTs.has(h.ts))];
-      localStorage.setItem('philo_history', JSON.stringify(history));
-    }
-  } catch(e) { console.warn('Supabase sync failed:', e); }
-})();
 
 function toast(msg){
 const t=document.getElementById('toast');
@@ -1102,18 +1087,25 @@ if(!match.length){
 r.innerHTML='<div class="empty-state"><span class="ei">😔</span><span class="et">暂时没有匹配「'+mood.name+'」的语录</span></div>';
 return;
 }
-r.innerHTML='<div class="mood-results"><div class="r-h">'+mood.icon+' 给「'+mood.name+'」的慰藉</div>'+
+r.innerHTML='<div class="mood-results"><div class="r-h">'+mood.icon+' 给「'+mood.name+'」的慰藉 <button class="mood-refresh" onclick="refreshMoodResults()">↻</button></div>'+
 match.map((q,i)=>'<div class="q-card" onclick="showQuote('+Q.indexOf(q)+')" style="animation-delay:'+(i*0.05)+'s"><div class="q-open">「</div><div class="q-text">'+q.text+'</div><div class="q-author">—— '+q.author+'</div></div>').join('')+
 '<button class="btn-save" onclick="saveMood()">💾 记录此刻心情</button></div>';
+}
+
+function refreshMoodResults(){
+if(!currentMood)return;
+const mood=MOODS.find(m=>m.id===currentMood);
+const match=Q.filter(q=>q.moodCategories&&q.moodCategories.includes(currentMood)).sort(()=>Math.random()-.5).slice(0,10);
+const r=document.getElementById('moodResults');
+if(!match.length){r.innerHTML='<div class="empty-state"><span class="ei">😔</span><span class="et">暂时没有匹配</span></div>';return;}
+r.innerHTML='<div class="mood-results"><div class="r-h">'+mood.icon+' 给「'+mood.name+'」的慰藉 <button class="mood-refresh" onclick="refreshMoodResults()">↻</button></div>'+match.map((q,i)=>'<div class="q-card" onclick="showQuote('+Q.indexOf(q)+')" style="animation-delay:'+(i*0.05)+'s"><div class="q-open">「</div><div class="q-text">'+q.text+'</div><div class="q-author">—— '+q.author+'</div></div>').join('')+'<button class="btn-save" onclick="saveMood()">💾 记录此刻心情</button></div>';
 }
 
 function saveMood(){
 if(!currentMood){toast('请先选择一种心情');return;}
 const n=new Date();
-const entry={date:n.toISOString().slice(0,10),time:n.toTimeString().slice(0,5),mood:currentMood,ts:n.getTime()};
-history.push(entry);
+history.push({date:n.toISOString().slice(0,10),time:n.toTimeString().slice(0,5),mood:currentMood,ts:n.getTime()});
 localStorage.setItem('philo_history',JSON.stringify(history));
-if(_supabase){try{_supabase.from('mood_entries').insert({date:entry.date,time:entry.time,mood:entry.mood,ts:entry.ts}).catch(()=>{});}catch(e){}}
 toast('✅ 已记录！前往「日记」标签查看');
 const mood=MOODS.find(m=>m.id===currentMood);
 document.getElementById('moodResults').innerHTML+='<div style="text-align:center;color:#34c759;font-size:13px;margin-top:8px">✅ 已保存到日记</div>';
@@ -1178,9 +1170,15 @@ document.getElementById('modal').classList.add('show');
 
 function closeModal(){document.getElementById('modal').classList.remove('show')}
 
+
+// Theme management
+function getPreferredTheme(){var stored=localStorage.getItem("philo_theme");if(stored==="light"||stored==="dark")return stored;return window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+function setTheme(theme){document.documentElement.setAttribute("data-theme",theme);localStorage.setItem("philo_theme",theme);var btn=document.getElementById("themeBtn");if(btn)btn.textContent=theme==="dark"?"☀️":"🌙"}
+function toggleTheme(){var current=document.documentElement.getAttribute("data-theme")||"light";setTheme(current==="dark"?"light":"dark")}
+setTheme(getPreferredTheme());
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(e){if(!localStorage.getItem("philo_theme")){setTheme(e.matches?"dark":"light")}});
 // Init
 renderDaily();
 </script>
 </body>
 </html>
-
